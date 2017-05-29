@@ -1,2 +1,2 @@
-# FullTruliaParser
-Parser for all Trulia properties
+# TruliaParser
+Это парсер для сайта
