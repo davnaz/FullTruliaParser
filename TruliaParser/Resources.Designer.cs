@@ -39,7 +39,7 @@ namespace TruliaParser {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("TruliaParser.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FT.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,7 +61,7 @@ namespace TruliaParser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на https://www.trulia.com.
+        ///   Ищет локализованную строку, похожую на https://www.FT.com.
         /// </summary>
         internal static string BaseLink {
             get {
@@ -79,7 +79,7 @@ namespace TruliaParser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Data Source=rentml.database.windows.net;Initial Catalog=Trulia;Integrated Security=False;User ID=rentml;Password=mlrent-1404;Connect Timeout=15;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False.
+        ///   Ищет локализованную строку, похожую на Data Source=rentml.database.windows.net;Initial Catalog=FT;Integrated Security=False;User ID=rentml;Password=mlrent-1404;Connect Timeout=15;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False.
         /// </summary>
         internal static string DbConnectionString {
             get {

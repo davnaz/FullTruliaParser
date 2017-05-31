@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using AngleSharp.Dom;
 using Jint.Native.Object;
-using TruliaParser.Components;
+using FTParser.Components;
 
-namespace TruliaParser
+namespace FTParser
 {
     internal class Offer
     {
@@ -66,7 +66,7 @@ namespace TruliaParser
         /// <summary>
         /// внутренняя оценка сервиса
         /// </summary>
-        public int truliaRank { get; set; }      //внутренняя оценка сервиса
+        public int FTRank { get; set; }      //внутренняя оценка сервиса
         /// <summary>
         /// тип жилья
         /// </summary>
@@ -168,7 +168,7 @@ namespace TruliaParser
             this.street = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.street);
             this.streetNumber = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.streetNumber);
             this.thumbnail = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.thumbnail).Replace("//", "https://");
-            this.truliaRank = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.truliaRank);
+            this.FTRank = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.FTRank);
             this.rentalType = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.type);
             this.zipCode = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.zipCode);
 

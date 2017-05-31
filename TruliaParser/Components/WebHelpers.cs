@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace TruliaParser.Components
+namespace FTParser.Components
 {
     class WebHelpers : SingleTone<WebHelpers>
     {
@@ -27,7 +27,7 @@ namespace TruliaParser.Components
             req.UserAgent = "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
             req.KeepAlive = true;
             req.Proxy = currentProxy;
-            //req.Host = "www.Trulia.com.au";
+            //req.Host = "www.FT.com.au";
             //if (cookies != null)
             //{
             //    req.CookieContainer = cookies; //самый важный пункт: сюда добавляем печеньку с идентификатором авторизации
@@ -92,7 +92,7 @@ namespace TruliaParser.Components
             req.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
             req.UserAgent = "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
             req.KeepAlive = true;
-            //req.Host = "www.Trulia.com.au";
+            //req.Host = "www.FT.com.au";
             //if (cookies != null)
             //{
             //    req.CookieContainer = cookies; //самый важный пункт: сюда добавляем печеньку с идентификатором авторизации

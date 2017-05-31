@@ -2,11 +2,11 @@
 using System.Data.SqlClient;
 using System.Data;
 using System;
-using TruliaParser.Components;
+using FTParser.Components;
 using System.Data.Common;
 using System.Collections.Generic;
 
-namespace TruliaParser.DataProviders
+namespace FTParser.DataProviders
 {
     public class DataProvider : SingleTone<DataProvider>
     {
@@ -255,7 +255,7 @@ namespace TruliaParser.DataProviders
                 insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.numFullBathrooms,      ((object)o.numFullBathrooms          )??(DBNull.Value));
                 insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.numPartialBathrooms,   ((object)o.numPartialBathrooms       )??(DBNull.Value));
                 insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.price,                 ((object)o.price                     )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.truliaRank,            ((object)o.truliaRank                )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.FTRank,            ((object)o.FTRank                )??(DBNull.Value));
                 insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.rentalType,            ((object)o.rentalType                )??(DBNull.Value));
                 insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.zipCode,               ((object)o.zipCode                   )??(DBNull.Value));
                 insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.streetNumber,          ((object)o.streetNumber              )??(DBNull.Value));

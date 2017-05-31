@@ -1,6 +1,6 @@
 ﻿using AngleSharp.Dom;
 using AngleSharp.Parser.Html;
-using TruliaParser.DataProviders;
+using FTParser.DataProviders;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -12,7 +12,7 @@ using Jint.Native;
 using AngleSharp.Extensions;
 using Jint.Native.Object;
 
-namespace TruliaParser.Components
+namespace FTParser.Components
 {
     class Parser
     {
@@ -37,7 +37,7 @@ namespace TruliaParser.Components
         {
             DataProvider.Instance.ExecureSP(DataProvider.Instance.CreateSQLCommandForSP(Resources.ClearRegionsSPName)); //чистим таблицу с ссылками на регионы
             SqlCommand insertLink = DataProvider.Instance.CreateSQLCommandForSP(Resources.InsertRegionSP); //подготовка процедуры для занесения ссылок в БД
-            string rentMapLink = "https://www.trulia.com/rent-sitemap/";
+            string rentMapLink = "https://www.FT.com/rent-sitemap/";
             string statePageHtml;
             while (true)
             {
@@ -85,7 +85,7 @@ namespace TruliaParser.Components
        
 
         /// <summary>
-        /// Парсит регион сайта Trulia  
+        /// Парсит регион сайта FT  
         /// </summary>
         /// <param name="regionLink">Полный адрес сайта региона для выборки</param>
         public void StartParsing(Region region) //
@@ -163,7 +163,7 @@ namespace TruliaParser.Components
             
             if(offerHtml != Constants.WebAttrsNames.NotFound)
             {
-                string offerPageHtmlReplacedOurData = offerHtml.Replace("trulia.propertyData.set", "var ourdata = ");
+                string offerPageHtmlReplacedOurData = offerHtml.Replace("FT.propertyData.set", "var ourdata = ");
                 offerDom = parser.Parse(offerPageHtmlReplacedOurData); //костыль, призванный решить проблему с не работающими методами сайта в голом HTML(без внешних JS)
                 System.Threading.Thread.Sleep(500);
                 try

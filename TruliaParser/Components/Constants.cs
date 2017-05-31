@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TruliaParser.Components
+namespace FTParser.Components
 {
     public class Constants
     {
@@ -78,7 +78,7 @@ namespace TruliaParser.Components
             public const string numPartialBathrooms = "numPartialBathrooms";
             public const string pdpURL = "pdpURL";
             public const string price = "price";
-            public const string truliaRank = "truliaRank";
+            public const string FTRank = "FTRank";
             public const string type = "type";
             public const string zipCode = "zipCode";
             public const string streetNumber = "streetNumber";
@@ -126,7 +126,7 @@ namespace TruliaParser.Components
             public const string numFullBathrooms = "@numFullBathrooms";
             public const string numPartialBathrooms = "@numPartialBathrooms";
             public const string price = "@price";
-            public const string truliaRank = "@truliaRank";
+            public const string FTRank = "@FTRank";
             public const string rentalType = "@rentalType";
             public const string zipCode = "@zipCode";
             public const string streetNumber = "@streetNumber";

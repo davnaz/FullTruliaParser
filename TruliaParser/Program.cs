@@ -5,16 +5,16 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Net;
 using System.Text;
-using TruliaParser.DataProviders;
+using FTParser.DataProviders;
 using AngleSharp.Dom.Html;
 using AngleSharp.Dom;
 using System.Threading;
 using System.Net.NetworkInformation;
-using TruliaParser.Components;
+using FTParser.Components;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace TruliaParser
+namespace FTParser
 {
     class Program
     {

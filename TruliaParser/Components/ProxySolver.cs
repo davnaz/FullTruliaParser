@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
-using TruliaParser.Components;
+using FTParser.Components;
 
-namespace TruliaParser.Components
+namespace FTParser.Components
 {
      
     public class ProxySolver: SingleTone<ProxySolver>

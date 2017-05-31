@@ -1,5 +1,5 @@
 ﻿
-namespace TruliaParser.Components
+namespace FTParser.Components
 {    
     public class SingleTone<T> where T : class, new()
     {
