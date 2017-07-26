@@ -13,14 +13,18 @@ using System.Net.NetworkInformation;
 using FTParser.Components;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using TruliaParser;
+using NLog;
 
 namespace FTParser
 {
     class Program
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
+
         static void Main(string[] args)
         {
-
+            logger.Info("Парсер начал работу.");
             ParallelOptions options = new ParallelOptions();
             options.MaxDegreeOfParallelism = Convert.ToInt32(Resources.MaxDegreeOfParallelism);
             Console.WriteLine("Получаю список неспарсенных регионов...");

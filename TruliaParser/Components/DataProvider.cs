@@ -5,6 +5,7 @@ using System;
 using FTParser.Components;
 using System.Data.Common;
 using System.Collections.Generic;
+using TruliaParser;
 
 namespace FTParser.DataProviders
 {

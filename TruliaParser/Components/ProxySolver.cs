@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using FTParser.Components;
+using TruliaParser;
 
 namespace FTParser.Components
 {

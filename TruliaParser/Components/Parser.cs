@@ -11,6 +11,7 @@ using AngleSharp.Scripting.JavaScript.Services;
 using Jint.Native;
 using AngleSharp.Extensions;
 using Jint.Native.Object;
+using TruliaParser;
 
 namespace FTParser.Components
 {
