@@ -79,11 +79,11 @@ namespace TruliaParser {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Data Source=rentml.database.windows.net;Initial Catalog=FT;Integrated Security=False;User ID=rentml;Password=mlrent-1404;Connect Timeout=15;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False.
+        ///   Ищет локализованную строку, похожую на Data Source=DESKTOP-9QE6CM7;Initial Catalog=TruliaProperty;Integrated Security=True.
         /// </summary>
-        internal static string DbConnectionString {
+        internal static string DbConnectionStringAzure {
             get {
-                return ResourceManager.GetString("DbConnectionString", resourceCulture);
+                return ResourceManager.GetString("DbConnectionStringAzure", resourceCulture);
             }
         }
         
@@ -142,11 +142,65 @@ namespace TruliaParser {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на SELECT * FROM Cities WHERE Parsed = 0.
+        /// </summary>
+        internal static string QuerySelectCitiesUndone {
+            get {
+                return ResourceManager.GetString("QuerySelectCitiesUndone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на SELECT * FROM Regions WHERE Done = &apos;0&apos;.
         /// </summary>
         internal static string QuerySelectRegionsUndone {
             get {
                 return ResourceManager.GetString("QuerySelectRegionsUndone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SELECT * FROM States WHERE Parsed = 0.
+        /// </summary>
+        internal static string QuerySelectStatesUndone {
+            get {
+                return ResourceManager.GetString("QuerySelectStatesUndone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SP_AddNewCity.
+        /// </summary>
+        internal static string SP_AddNewCity {
+            get {
+                return ResourceManager.GetString("SP_AddNewCity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SP_AddNewState.
+        /// </summary>
+        internal static string SP_AddNewState {
+            get {
+                return ResourceManager.GetString("SP_AddNewState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SP_AddNewStreet.
+        /// </summary>
+        internal static string SP_AddNewStreet {
+            get {
+                return ResourceManager.GetString("SP_AddNewStreet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SP_FinalizeCity.
+        /// </summary>
+        internal static string SP_FinalizeCity {
+            get {
+                return ResourceManager.GetString("SP_FinalizeCity", resourceCulture);
             }
         }
         

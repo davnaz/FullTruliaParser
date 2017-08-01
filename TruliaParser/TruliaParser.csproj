@@ -95,6 +95,7 @@
     <Compile Include="Components\DataProvider.cs" />
     <Compile Include="Components\Parser.cs" />
     <Compile Include="Components\ProxySolver.cs" />
+    <Compile Include="Components\Structures.cs" />
     <Compile Include="Region.cs" />
     <Compile Include="Components\SingleTone.cs" />
     <Compile Include="Components\WebHelpers.cs" />

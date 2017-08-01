@@ -6,6 +6,8 @@ using System.Net;
 using System.Net.NetworkInformation;
 using FTParser.Components;
 using TruliaParser;
+using OpenQA.Selenium.PhantomJS;
+using OpenQA.Selenium;
 
 namespace FTParser.Components
 {
@@ -164,6 +166,21 @@ namespace FTParser.Components
                     return false;
                 }
             }
+        }
+
+        public static PhantomJSDriverService GetServiceForDriver()
+        {
+            Proxy proxy = new Proxy();
+            proxy.HttpProxy = string.Format("108.59.14.208:13040");
+            var service = PhantomJSDriverService.CreateDefaultService();
+            service.ProxyType = "http";
+            service.Proxy = proxy.HttpProxy;
+            service.IgnoreSslErrors = true;
+            service.WebSecurity = false;
+            service.LocalToRemoteUrlAccess = true;
+            service.DiskCache = true; // Dunno what this does but I thought it might help.
+            
+            return service;
         }
     }
 }

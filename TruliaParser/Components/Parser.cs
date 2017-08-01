@@ -7,16 +7,18 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using AngleSharp;
-using AngleSharp.Scripting.JavaScript.Services;
-using Jint.Native;
 using AngleSharp.Extensions;
 using Jint.Native.Object;
 using TruliaParser;
+using OpenQA.Selenium.PhantomJS;
+using FT.Components;
+using NLog;
 
 namespace FTParser.Components
 {
     class Parser
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
         private static WebProxy currentProxy;
         private static HtmlParser parser;
 
@@ -26,12 +28,247 @@ namespace FTParser.Components
             var config = new Configuration()
                 .WithJavaScript();
             parser = new HtmlParser(config); //создание экземпляра парсера, он можнт быть использован несколько раз для одного потока(экземпляра класса Parser)
-            
+
         }
 
         private WebProxy UpdateInternalProxy()
         {
             return currentProxy = ProxySolver.Instance.getNewProxy();
+        }
+
+        internal static void FinalizeCity(City city)
+        {
+            try
+            {
+                SqlCommand finalCity = DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_FinalizeCity);
+                finalCity.Parameters.AddWithValue("@ID", city.ID);
+                DataProvider.Instance.ExecureSP(finalCity);
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Ошибка финализирования города {2} {3} {0},{1}", ex.Message, ex.StackTrace, city.ID, city.CityName);
+            }
+
+        }
+
+        /// <summary>
+        /// Получает данные о штатах со страницы https://www.trulia.com/property-sitemap/ и записывает в БД
+        /// </summary>
+        public static void GetStateListToDb()
+        {
+            var driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
+            driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
+            string statesLink = "https://www.trulia.com/property-sitemap/";
+            driver.Navigate().GoToUrl(statesLink);
+            var linksElemsList = driver.FindElementsByCssSelector(".content .cols12 li a");
+            foreach (var linkElem in linksElemsList)
+            {
+                Console.WriteLine(linkElem.GetAttribute(Constants.WebAttrsNames.href) + ",   " + linkElem.Text.Remove(linkElem.Text.Length - 7, 6));
+                SqlCommand insertState = DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_AddNewState);
+                insertState.Parameters.AddWithValue("@StateName", linkElem.Text.Remove(linkElem.Text.Length - 7, 6));
+                insertState.Parameters.AddWithValue("@Link", linkElem.GetAttribute(Constants.WebAttrsNames.href));
+                DataProvider.Instance.ExecureSP(insertState);
+            }
+            driver.Quit();
+        }
+
+        public static void GetCityListToDb(State state)
+        {
+            while (true)
+            {
+                PhantomJSDriver driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
+                try
+                {
+                    driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
+                    driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
+                    while (true)
+                    {
+                        try
+                        {
+                            driver.Navigate().GoToUrl(state.Link);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло. {0},{1}", ex.Message, ex.StackTrace);
+                            driver.Quit();
+                            driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
+                            driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
+                            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
+                        }
+                    }
+
+                    while (true)
+                    {
+                        var citylinks = driver.FindElementsByCssSelector("dl a");
+
+
+                        foreach (var a in citylinks)
+                        {
+                            string Text = a.Text;
+                            Text = Text.Remove(Text.Length - 7, 6);
+                            string href = a.GetAttribute(Constants.WebAttrsNames.href);
+                            Console.WriteLine("City: {0}, Link: {1}, Count: {2}", Text.Replace(Text.Split(' ')[0], String.Empty), href, Int32.Parse(Text.Split(' ')[0].Replace(",", String.Empty)));
+                            SqlCommand insertCity = DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_AddNewCity);
+                            insertCity.Parameters.AddWithValue("@StateName", state.StateName);
+                            insertCity.Parameters.AddWithValue("@Link", href);
+                            insertCity.Parameters.AddWithValue("@CityName", Text.Replace(Text.Split(' ')[0], String.Empty));
+                            insertCity.Parameters.AddWithValue("@Count", Int32.Parse(Text.Split(' ')[0].Replace(",", String.Empty)));
+                            DataProvider.Instance.ExecureSP(insertCity);
+                        }
+                        var nextButtons = driver.FindElementsByCssSelector("*[rel=next]");
+                        if (nextButtons.Count > 0)
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+
+                                    nextButtons[0].Click();
+                                    break;
+                                }
+                                catch (OpenQA.Selenium.WebDriverTimeoutException ex)
+                                {
+                                    //throw new Exception();
+                                    logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло.");
+                                    logger.Error(ex, "Ошибка получения страницы, время ожидания истекло.");
+                                }
+                                catch (OpenQA.Selenium.StaleElementReferenceException ex)
+                                {
+                                    //throw new Exception();
+                                    logger.Trace(ex, "Отсутствует данный Элемент на странице(кнопка Next)");
+                                    logger.Error("Отсутствует данный Элемент на странице(кнопка Next)");
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+
+                                    logger.Error(ex, "Неизвестная ошибка: {1}, {0}", ex.StackTrace, ex.Message);
+                                    logger.Trace(ex, "Неизвестная ошибка: {1}, {0}", ex.StackTrace, ex.Message);
+                                    throw;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    driver.Quit();
+                    break;
+                }
+                catch (OpenQA.Selenium.WebDriverException ex)
+                {
+                    driver.Quit();
+                    logger.Error(ex, "Возникло исключение web-драйвера: {1}, {0}", ex.StackTrace, ex.Message);
+                }
+            }
+            //foreach (var linkElem in linksElemsList)
+            //{
+            //    Console.WriteLine(linkElem.GetAttribute(Constants.WebAttrsNames.href) + ",   " + linkElem.Text.Replace(" homes", String.Empty));
+            //    SqlCommand insertState = DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_AddNewState);
+            //    insertState.Parameters.AddWithValue("@StateName", linkElem.Text.Replace(" homes", String.Empty));
+            //    insertState.Parameters.AddWithValue("@Link", linkElem.GetAttribute(Constants.WebAttrsNames.href));
+            //    DataProvider.Instance.ExecureSP(insertState);
+            //}
+
+        }
+
+        public static void GetSteetsToDb(City city)
+        {
+            while (true)
+            {
+                var driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
+                try
+                {
+                    
+                    driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
+                    driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
+                    while (true)
+                    {
+                        try
+                        {
+                            driver.Navigate().GoToUrl(city.Link);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло. {0},{1}", ex.Message, ex.StackTrace);
+                            driver.Quit();
+                            driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
+                            driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
+                            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
+                        }
+                    }
+
+                    while (true)
+                    {
+                        var streetlinks = driver.FindElementsByCssSelector(".mvm a");
+
+
+                        foreach (var a in streetlinks)
+                        {
+                            string Text = a.Text;
+                            Text = Text.Replace("homes in ", String.Empty);
+                            string href = a.GetAttribute(Constants.WebAttrsNames.href);
+                            Console.WriteLine("State: {2}, City: {3} Street: {0}, Link: {1}", Text, href, city.StateName, city.CityName);
+                            SqlCommand insertStreet = DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_AddNewStreet);
+                            insertStreet.Parameters.AddWithValue("@StateName", city.StateName);
+                            insertStreet.Parameters.AddWithValue("@Link", href);
+                            insertStreet.Parameters.AddWithValue("@CityName", city.CityName);
+                            insertStreet.Parameters.AddWithValue("@StreetName", Text);
+                            insertStreet.Parameters.AddWithValue("@ZIP", Text.Split(' ')[Text.Split(' ').Length - 1]);
+                            DataProvider.Instance.ExecureSP(insertStreet);
+                        }
+                        var nextButtons = driver.FindElementsByCssSelector("*[rel=next]");
+                        if (nextButtons.Count > 0)
+                        {
+                            while (true)
+                            {
+                                try
+                                {
+
+                                    nextButtons[0].Click();
+                                    break;
+                                }
+                                catch (OpenQA.Selenium.WebDriverTimeoutException ex)
+                                {
+                                    //throw new Exception();
+                                    logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло.");
+                                    logger.Error(ex, "Ошибка получения страницы, время ожидания истекло.");
+                                }
+                                catch (OpenQA.Selenium.StaleElementReferenceException ex)
+                                {
+                                    //throw new Exception();
+                                    logger.Trace(ex, "Отсутствует данный Элемент на странице(кнопка Next)");
+                                    logger.Error("Отсутствует данный Элемент на странице(кнопка Next)");
+                                    break;
+                                }
+                                catch (Exception ex)
+                                {
+
+                                    logger.Error(ex, "Неизвестная ошибка: {1}, {0}", ex.StackTrace, ex.Message);
+                                    logger.Trace(ex, "Неизвестная ошибка: {1}, {0}", ex.StackTrace, ex.Message);
+                                    throw;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    driver.Quit();
+                    break;
+                }
+                catch (OpenQA.Selenium.WebDriverException ex)
+                {
+                    driver.Quit();
+                    logger.Error(ex, "Возникло исключение web-драйвера: {1}, {0}", ex.StackTrace, ex.Message);
+                }
+            }
+
+
         }
 
         private void ParseRegionsToDb()
@@ -83,7 +320,7 @@ namespace FTParser.Components
             });
         }
 
-       
+
 
         /// <summary>
         /// Парсит регион сайта FT  
@@ -95,16 +332,16 @@ namespace FTParser.Components
             Console.WriteLine("Beginning the parsing new region:\nState: {0}, County: {1}, Link: {2}", region.State, region.RegionName, region.Link);
             List<string> offerLinks = new List<string>(GetOffersLinks(regionLink));
             offerLinks.ForEach(i => ParseOffer(i));
-            if(offerLinks.Count >= region.OffersCount*0.9 || (offerLinks.Count- region.OffersCount < 20))
+            if (offerLinks.Count >= region.OffersCount * 0.9 || (offerLinks.Count - region.OffersCount < 20))
             {
                 DataProvider.Instance.FinalizeRegion(region);
             }
             else
             {
-                Console.WriteLine("Кажется, регион неправильно спарсился(забрал ссылки)собрано/ожидалось: {0},{1}",offerLinks.Count,region.OffersCount);
+                Console.WriteLine("Кажется, регион неправильно спарсился(забрал ссылки)собрано/ожидалось: {0},{1}", offerLinks.Count, region.OffersCount);
             }
             //Console.ReadKey();
-            
+
         }
 
         private int getOffersCount(string regionLink)
@@ -124,7 +361,7 @@ namespace FTParser.Components
                 var regionPageDom = parser.Parse(regionPageHtml);
                 try
                 {
-                    int offersCount = Convert.ToInt32(regionPageDom.QuerySelector(Constants.OfferListSelectors.OffersCount).TextContent.Trim('(',')'));
+                    int offersCount = Convert.ToInt32(regionPageDom.QuerySelector(Constants.OfferListSelectors.OffersCount).TextContent.Trim('(', ')'));
                     return offersCount;
                 }
                 catch (Exception e)
@@ -148,10 +385,10 @@ namespace FTParser.Components
             string offerHtml = Constants.WebAttrsNames.NotFound;
             IDocument offerDom;
             int numOfRetrying = Convert.ToInt32(Resources.NumberOfLoadRetrying);
-            while(true)
+            while (true)
             {
-                offerHtml = WebHelpers.GetHtmlThrowProxy(offerLink,currentProxy);
-                if(offerHtml == Constants.WebAttrsNames.NotFound)
+                offerHtml = WebHelpers.GetHtmlThrowProxy(offerLink, currentProxy);
+                if (offerHtml == Constants.WebAttrsNames.NotFound)
                 {
                     UpdateInternalProxy();
                     Console.WriteLine("Хреновый прокси! {0}", offerLink);
@@ -161,8 +398,8 @@ namespace FTParser.Components
                     break;
                 }
             }
-            
-            if(offerHtml != Constants.WebAttrsNames.NotFound)
+
+            if (offerHtml != Constants.WebAttrsNames.NotFound)
             {
                 string offerPageHtmlReplacedOurData = offerHtml.Replace("FT.propertyData.set", "var ourdata = ");
                 offerDom = parser.Parse(offerPageHtmlReplacedOurData); //костыль, призванный решить проблему с не работающими методами сайта в голом HTML(без внешних JS)
@@ -176,9 +413,9 @@ namespace FTParser.Components
                     o.FillFromHtmlDocument(offerDom);
                     DataProvider.Instance.InsertOfferToDb(o);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Ошибка,{0},{1}",ex.Message,offerHtml);
+                    Console.WriteLine("Ошибка,{0},{1}", ex.Message, offerHtml);
                 }
             }
             else
@@ -191,7 +428,7 @@ namespace FTParser.Components
         {
             int switchProxyRemindCounter = 0; //счетчик количества использования одного прокси
             string nextPageLink = regionLink;
-            IElement nextPageLinkDom = null;            
+            IElement nextPageLinkDom = null;
             List<string> offerLinks = new List<string>();
             while (true)
             {
@@ -200,7 +437,7 @@ namespace FTParser.Components
                 while (true)
                 {
                     searchResultPageHtml = WebHelpers.GetHtmlThrowProxy(nextPageLink, currentProxy); //скачали страницу с выдачей
-                    if(searchResultPageHtml != Constants.WebAttrsNames.NotFound)
+                    if (searchResultPageHtml != Constants.WebAttrsNames.NotFound)
                     {
                         break;
                     }
@@ -210,13 +447,13 @@ namespace FTParser.Components
                         UpdateInternalProxy();
                     }
                 }
-                
+
                 var searchResultPageDom = parser.Parse(searchResultPageHtml); //перегнали в DOM
                 var offerLinksDom = searchResultPageDom.QuerySelectorAll(Constants.OfferListSelectors.OfferLinks); //получили все ссылки на предложения
                 if (offerLinksDom != null) //если ссылки на странице есть, собираем в список
                 {
-                    offerLinks.AddRange(offerLinksDom.ToList().Select(i => Resources.BaseLink+i.GetAttribute(Constants.WebAttrsNames.href)));
-                    Console.WriteLine("Добавлено предложений в список/всего: {0}/{1}, {2}",offerLinksDom.Length, offerLinks.Count, nextPageLink);
+                    offerLinks.AddRange(offerLinksDom.ToList().Select(i => Resources.BaseLink + i.GetAttribute(Constants.WebAttrsNames.href)));
+                    Console.WriteLine("Добавлено предложений в список/всего: {0}/{1}, {2}", offerLinksDom.Length, offerLinks.Count, nextPageLink);
                 }
                 else
                 {
@@ -225,9 +462,9 @@ namespace FTParser.Components
                 }
                 var findNextPageButton = searchResultPageDom.QuerySelectorAll(Constants.OfferListSelectors.NextPage); //ищем кнопку на след страницу
                 nextPageLinkDom = null;
-                for(int o = 0;o < findNextPageButton.Length;o++)
+                for (int o = 0; o < findNextPageButton.Length; o++)
                 {
-                    if(findNextPageButton[o].TextContent == ">>")
+                    if (findNextPageButton[o].TextContent == ">>")
                     {
                         nextPageLinkDom = findNextPageButton[o];
                         break;
@@ -253,8 +490,8 @@ namespace FTParser.Components
                     Console.WriteLine("Ссылки на следующую страницу нет.Закансиваем собирать ссылки этого региона, вероятно, на странице ошибка, {0}.", regionLink);
                     break;
                 }
-                
-                
+
+
                 if (switchProxyRemindCounter > 10)
                 {
                     Console.WriteLine("Refreshing proxy...");
@@ -271,6 +508,5 @@ namespace FTParser.Components
 }
 
 
- 
- 
-        
+
+

@@ -121,8 +121,8 @@
     <value>https://www.FT.com</value>
     <comment>Базовая страница для адресов страниц, которые нуно парсить</comment>
   </data>
-  <data name="DbConnectionString" xml:space="preserve">
-    <value>Data Source=rentml.database.windows.net;Initial Catalog=FT;Integrated Security=False;User ID=rentml;Password=mlrent-1404;Connect Timeout=15;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False</value>
+  <data name="DbConnectionStringAzure" xml:space="preserve">
+    <value>Data Source=DESKTOP-9QE6CM7;Initial Catalog=TruliaProperty;Integrated Security=True</value>
     <comment>Эта строка нужна для подключения к БД FT на удаленном серваке</comment>
   </data>
   <data name="MaxProxyPing" xml:space="preserve">
@@ -161,6 +161,30 @@
   </data>
   <data name="SP_InsertOffer" xml:space="preserve">
     <value>SP_AddOffer</value>
-    <comment>Название добавления предложения в БД</comment>
+    <comment>Процедура добавления предложения в БД</comment>
+  </data>
+  <data name="SP_AddNewState" xml:space="preserve">
+    <value>SP_AddNewState</value>
+    <comment>Процедура для добавления штата в таблицу Штатов</comment>
+  </data>
+  <data name="QuerySelectStatesUndone" xml:space="preserve">
+    <value>SELECT * FROM States WHERE Parsed = 0</value>
+    <comment>SQL-запрос для выборки штатов, которые не были спарсены</comment>
+  </data>
+  <data name="SP_AddNewCity" xml:space="preserve">
+    <value>SP_AddNewCity</value>
+    <comment>Процедура для добавления города в таблицу городов</comment>
+  </data>
+  <data name="QuerySelectCitiesUndone" xml:space="preserve">
+    <value>SELECT * FROM Cities WHERE Parsed = 0</value>
+    <comment>SQL-запрос для выборки городов, которые не были спарсены</comment>
+  </data>
+  <data name="SP_AddNewStreet" xml:space="preserve">
+    <value>SP_AddNewStreet</value>
+    <comment>Процедура для добавления штата в таблицу Улиц</comment>
+  </data>
+  <data name="SP_FinalizeCity" xml:space="preserve">
+    <value>SP_FinalizeCity</value>
+    <comment>Процедура присвоения записи региона маркер Parsed = 1</comment>
   </data>
 </root>
