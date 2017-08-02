@@ -37,9 +37,16 @@ namespace FTParser
             Parallel.ForEach(cities, options, (city) =>
             {
                 logger.Info("Getting streets of {0},{1}", city.StateName,city.CityName);
-                Parser.GetSteetsToDb(city);
-                Parser.FinalizeCity(city);
-                logger.Info("Getting streets of {0},{1} is over", city.StateName, city.CityName);
+                Console.WriteLine("Getting streets of {0},{1}", city.StateName, city.CityName);
+                while (true)
+                {
+                    if (Parser.GetSteetsToDb(city))
+                    {
+                        Parser.FinalizeCity(city);
+                        break;
+                    }                    
+                }                
+                //logger.Info("Getting streets of {0},{1} is over", city.StateName, city.CityName);
             });
             logger.Info("Парсер закончил работу.");
              

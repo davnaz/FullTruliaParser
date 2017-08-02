@@ -76,7 +76,20 @@ namespace FTParser.Components
         {
             while (true)
             {
-                PhantomJSDriver driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
+                PhantomJSDriver driver;
+                while (true)
+                {
+                    try
+                    {
+                        driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
+                        break;
+                    }
+                    catch(Exception ex)
+                    {
+                        logger.Error(ex, "Ошибка создания драйвера: {0},{1}", ex.Message, ex.StackTrace);
+                    }
+                }
+                
                 try
                 {
                     driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
@@ -108,7 +121,7 @@ namespace FTParser.Components
                             string Text = a.Text;
                             Text = Text.Remove(Text.Length - 7, 6);
                             string href = a.GetAttribute(Constants.WebAttrsNames.href);
-                            Console.WriteLine("City: {0}, Link: {1}, Count: {2}", Text.Replace(Text.Split(' ')[0], String.Empty), href, Int32.Parse(Text.Split(' ')[0].Replace(",", String.Empty)));
+                            //Console.WriteLine("City: {0}, Link: {1}, Count: {2}", Text.Replace(Text.Split(' ')[0], String.Empty), href, Int32.Parse(Text.Split(' ')[0].Replace(",", String.Empty)));
                             SqlCommand insertCity = DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_AddNewCity);
                             insertCity.Parameters.AddWithValue("@StateName", state.StateName);
                             insertCity.Parameters.AddWithValue("@Link", href);
@@ -174,101 +187,123 @@ namespace FTParser.Components
 
         }
 
-        public static void GetSteetsToDb(City city)
+        public static bool GetSteetsToDb(City city)
         {
-            while (true)
+            PhantomJSDriver driver = CreateDriver();
+
+            try
             {
-                var driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
-                try
+                if (driver.SessionId == null)
                 {
-                    
-                    driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
-                    driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
-                    while (true)
+                    driver = CreateDriver();
+                }
+
+                //переход по стартовой ссылке города
+                while (true)
+                {
+                    try
                     {
-                        try
-                        {
-                            driver.Navigate().GoToUrl(city.Link);
-                            break;
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло. {0},{1}", ex.Message, ex.StackTrace);
-                            driver.Quit();
-                            driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
-                            driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
-                            driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
-                        }
+                        driver.Navigate().GoToUrl(city.Link);
+                        break;
                     }
-
-                    while (true)
+                    catch (Exception ex)
                     {
-                        var streetlinks = driver.FindElementsByCssSelector(".mvm a");
+                        logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло. {0},{1}", ex.Message, ex.StackTrace);
+                        driver.Quit();
+                        driver = CreateDriver();
+                    }
+                }
+
+                //забор элементов со страниц
+                while (true)
+                {
+                    var streetlinks = driver.FindElementsByCssSelector(".mvm a");
 
 
-                        foreach (var a in streetlinks)
+                    foreach (var a in streetlinks)
+                    {
+                        string Text = a.Text;
+                        Text = Text.Replace("homes in ", String.Empty);
+                        string href = a.GetAttribute(Constants.WebAttrsNames.href);
+                        Console.WriteLine("State: {2}, City: {3} Street: {0}, Link: {1}", Text, href, city.StateName, city.CityName);
+                        SqlCommand insertStreet = DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_AddNewStreet);
+                        insertStreet.Parameters.AddWithValue("@StateName", city.StateName);
+                        insertStreet.Parameters.AddWithValue("@Link", href);
+                        insertStreet.Parameters.AddWithValue("@CityName", city.CityName);
+                        insertStreet.Parameters.AddWithValue("@StreetName", Text);
+                        insertStreet.Parameters.AddWithValue("@ZIP", Text.Split(' ')[Text.Split(' ').Length - 1]);
+                        DataProvider.Instance.ExecureSP(insertStreet);
+                    }
+                    var nextButtons = driver.FindElementsByCssSelector("*[rel=next]");
+                    if (nextButtons.Count > 0)
+                    {
+                        while (true)
                         {
-                            string Text = a.Text;
-                            Text = Text.Replace("homes in ", String.Empty);
-                            string href = a.GetAttribute(Constants.WebAttrsNames.href);
-                            Console.WriteLine("State: {2}, City: {3} Street: {0}, Link: {1}", Text, href, city.StateName, city.CityName);
-                            SqlCommand insertStreet = DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_AddNewStreet);
-                            insertStreet.Parameters.AddWithValue("@StateName", city.StateName);
-                            insertStreet.Parameters.AddWithValue("@Link", href);
-                            insertStreet.Parameters.AddWithValue("@CityName", city.CityName);
-                            insertStreet.Parameters.AddWithValue("@StreetName", Text);
-                            insertStreet.Parameters.AddWithValue("@ZIP", Text.Split(' ')[Text.Split(' ').Length - 1]);
-                            DataProvider.Instance.ExecureSP(insertStreet);
-                        }
-                        var nextButtons = driver.FindElementsByCssSelector("*[rel=next]");
-                        if (nextButtons.Count > 0)
-                        {
-                            while (true)
+                            try
                             {
-                                try
-                                {
 
-                                    nextButtons[0].Click();
-                                    break;
-                                }
-                                catch (OpenQA.Selenium.WebDriverTimeoutException ex)
-                                {
-                                    //throw new Exception();
-                                    logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло.");
-                                    logger.Error(ex, "Ошибка получения страницы, время ожидания истекло.");
-                                }
-                                catch (OpenQA.Selenium.StaleElementReferenceException ex)
-                                {
-                                    //throw new Exception();
-                                    logger.Trace(ex, "Отсутствует данный Элемент на странице(кнопка Next)");
-                                    logger.Error("Отсутствует данный Элемент на странице(кнопка Next)");
-                                    break;
-                                }
-                                catch (Exception ex)
-                                {
+                                nextButtons[0].Click();
+                                break;
+                            }
+                            catch (OpenQA.Selenium.WebDriverTimeoutException ex)
+                            {
+                                //throw new Exception();
+                                logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло.");
+                                logger.Error(ex, "Ошибка получения страницы, время ожидания истекло.");
+                            }
+                            catch (OpenQA.Selenium.StaleElementReferenceException ex)
+                            {
+                                //throw new Exception();
+                                logger.Trace(ex, "Отсутствует данный Элемент на странице(кнопка Next)");
+                                logger.Error("Отсутствует данный Элемент на странице(кнопка Next)");
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
 
-                                    logger.Error(ex, "Неизвестная ошибка: {1}, {0}", ex.StackTrace, ex.Message);
-                                    logger.Trace(ex, "Неизвестная ошибка: {1}, {0}", ex.StackTrace, ex.Message);
-                                    throw;
-                                }
+                                logger.Error(ex, "Неизвестная ошибка: {1}, {0}", ex.StackTrace, ex.Message);
+                                logger.Trace(ex, "Неизвестная ошибка: {1}, {0}", ex.StackTrace, ex.Message);
+                                throw;
                             }
                         }
-                        else
-                        {
-                            break;
-                        }
                     }
-                    driver.Quit();
+                    else
+                    {
+                        break;
+                    }
+                }
+                return true; //все прошло успешно
+            }
+            catch (OpenQA.Selenium.WebDriverException ex)
+            {
+                logger.Error(ex, "Возникло исключение web-драйвера: {1}, {0}", ex.StackTrace, ex.Message);
+                return false;
+            }
+            finally
+            {
+                driver.Quit();
+            }
+        }
+
+        private static PhantomJSDriver CreateDriver()
+        {
+            PhantomJSDriver driver;
+            while (true)
+            {
+                try
+                {
+                    driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
+                    driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
+                    driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
                     break;
                 }
-                catch (OpenQA.Selenium.WebDriverException ex)
+                catch (Exception ex)
                 {
-                    driver.Quit();
-                    logger.Error(ex, "Возникло исключение web-драйвера: {1}, {0}", ex.StackTrace, ex.Message);
+                    logger.Error(ex, "Ошибка создания драйвера: {0},{1}", ex.Message, ex.StackTrace);
                 }
             }
 
-
+            return driver;
         }
 
         private void ParseRegionsToDb()
