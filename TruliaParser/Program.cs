@@ -30,13 +30,29 @@ namespace FTParser
         {
             logger.Info("Парсер начал работу.");
 
+            Street s = DataProvider.Instance.GetStreetsFromDb(1, 1)[0];
+            Parser.ParseHomes(s);
 
+            logger.Info("Парсер закончил работу.");
+
+
+            // Parser.GetCitiesToDb()
+            // List<City> cities = 
+
+
+
+
+            Console.ReadKey();
+        }
+
+        private static void ParseStreets()
+        {
             List<City> cities = DataProvider.Instance.GetCitiesFromDb();
             ParallelOptions options = new ParallelOptions();
             options.MaxDegreeOfParallelism = Convert.ToInt32(Resources.MaxDegreeOfParallelism);
             Parallel.ForEach(cities, options, (city) =>
             {
-                logger.Info("Getting streets of {0},{1}", city.StateName,city.CityName);
+                logger.Info("Getting streets of {0},{1}", city.StateName, city.CityName);
                 Console.WriteLine("Getting streets of {0},{1}", city.StateName, city.CityName);
                 while (true)
                 {
@@ -44,20 +60,10 @@ namespace FTParser
                     {
                         Parser.FinalizeCity(city);
                         break;
-                    }                    
-                }                
+                    }
+                }
                 //logger.Info("Getting streets of {0},{1} is over", city.StateName, city.CityName);
             });
-            logger.Info("Парсер закончил работу.");
-             
-
-           // Parser.GetCitiesToDb()
-           // List<City> cities = 
-
-
-
-
-            //Console.ReadKey();
         }
 
         private static void ParseCitiesFromStates()

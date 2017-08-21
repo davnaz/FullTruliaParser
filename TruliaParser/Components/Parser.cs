@@ -72,6 +72,110 @@ namespace FTParser.Components
             driver.Quit();
         }
 
+        public static bool ParseHomes(Street street)
+        { 
+          PhantomJSDriver driver = CreateDriver();
+
+            try
+            {
+                if (driver.SessionId == null)
+                {
+                    driver = CreateDriver();
+    }
+
+                //переход по стартовой ссылке города
+                while (true)
+                {
+                    try
+                    {
+                        driver.Navigate().GoToUrl(street.Link);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло. {0},{1}", ex.Message, ex.StackTrace);
+                        driver.Quit();
+                        driver = CreateDriver();
+                    }
+                }
+
+                //забор элементов со страниц
+                List<string> homeHrefs = new List<string>(); //создаем список для ссылок на дома(property) 
+                //сначала в цикле while соберем ссылки на дома в список
+                while (true)
+                {
+                    var homelinks = driver.FindElementsByCssSelector(".mvm a"); //выбираем элементы, в которых есть нужные нам ссылки
+                    if (homelinks.Count == 0) //т.е. улица пуста
+                    {
+                        return true;
+                    }
+
+                    foreach (var a in homelinks)
+                    {
+                        homeHrefs.Add(a.GetAttribute(Constants.WebAttrsNames.href));
+                    }
+
+                    var nextButtons = driver.FindElementsByCssSelector("*[rel=next]");
+                    if (nextButtons.Count > 0)
+                    {
+                        while (true)
+                        {
+                            try
+                            {
+
+                                nextButtons[0].Click();
+                                break;
+                            }
+                            catch (OpenQA.Selenium.WebDriverTimeoutException ex)
+                            {
+                                //throw new Exception();
+                                logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло.");
+                                logger.Error(ex, "Ошибка получения страницы, время ожидания истекло.");
+                            }
+                            catch (OpenQA.Selenium.StaleElementReferenceException ex)
+                            {
+                                //throw new Exception();
+                                logger.Trace(ex, "Отсутствует данный Элемент на странице(кнопка Next)");
+                                logger.Error("Отсутствует данный Элемент на странице(кнопка Next)");
+                                break;
+                            }
+                            catch (Exception ex)
+                            {
+
+                                logger.Error(ex, "Неизвестная ошибка: {1}, {0}", ex.StackTrace, ex.Message);
+                                logger.Trace(ex, "Неизвестная ошибка: {1}, {0}", ex.StackTrace, ex.Message);
+                                throw;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                foreach(string link in homeHrefs) //а теперь сам процесс обработки домов по ссылкам
+                {
+
+                    Console.WriteLine(link);
+                }
+                return true; //все прошло успешно
+            }
+            catch (OpenQA.Selenium.WebDriverException ex)
+            {
+                logger.Error(ex, "Возникло исключение web-драйвера: {1}, {0}", ex.StackTrace, ex.Message);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Возникло неизвестное исключение: {1}, {0}", ex.StackTrace, ex.Message);
+                return false;
+            }
+            finally
+            {
+                driver.Quit();
+            }
+        }
+
         public static void GetCityListToDb(State state)
         {
             while (true)
@@ -277,6 +381,11 @@ namespace FTParser.Components
             catch (OpenQA.Selenium.WebDriverException ex)
             {
                 logger.Error(ex, "Возникло исключение web-драйвера: {1}, {0}", ex.StackTrace, ex.Message);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Возникло неизвестное исключение: {1}, {0}", ex.StackTrace, ex.Message);
                 return false;
             }
             finally

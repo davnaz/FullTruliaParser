@@ -221,5 +221,14 @@ namespace TruliaParser {
                 return ResourceManager.GetString("SP_InsertOffer", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на .
+        /// </summary>
+        internal static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
+            }
+        }
     }
 }

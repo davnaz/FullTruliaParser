@@ -287,6 +287,21 @@ namespace FTParser.DataProviders
             return cities;
         }
 
+        internal List<Street> GetStreetsFromDb(long startId,long endId)
+        {
+            SqlDataAdapter da = new SqlDataAdapter();
+            SqlCommand cmd = CreateSQLCommand(String.Format("SELECT * FROM Streets WHERE Parsed = 0 AND ID >= {0} AND ID <= {1}",startId,endId));
+            da.SelectCommand = cmd;
+            DataSet ds = new DataSet();
+            da.Fill(ds);
+            List<Street> streets = new List<Street>();
+            foreach (DataRow row in ds.Tables[0].Rows)
+            {
+                streets.Add(new Street(row));
+            }
+            return streets;
+        }
+
         internal void FinalizeRegion(Region r)
         {
             try
