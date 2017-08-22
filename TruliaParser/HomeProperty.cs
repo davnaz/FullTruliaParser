@@ -6,7 +6,7 @@ using FTParser.Components;
 
 namespace FTParser
 {
-    internal class Offer
+    internal class HomeProperty
     {
         //Это те, которые берутся из JS-переменной
         public long postId { get; set; }     
@@ -21,8 +21,7 @@ namespace FTParser
         /// <summary>
         /// 
         /// </summary>
-        public string dataPhotos { get; set; }          //JSON с фотками
-        public int feedId { get; set; }              
+        public string dataPhotos { get; set; }          //JSON с фотками            
         public string formattedBedAndBath { get; set; } 
         public string formattedPrice { get; set; }      
         public string formattedSqft { get; set; }    
@@ -45,7 +44,7 @@ namespace FTParser
         /// <summary>
         /// идентификатор локации
         /// </summary>
-        public int locationId { get; set; }          
+        public string locationId { get; set; }          
         public long listingId { get; set; }           
         public int numBathrooms { get; set; }        
         public int numBedrooms { get; set; }         
@@ -63,14 +62,7 @@ namespace FTParser
         ///// </summary>
         //public string pdpURL { get; set; }              //ссылка до предложения (не включая главный домен)
         public double price { get; set; }               
-        /// <summary>
-        /// внутренняя оценка сервиса
-        /// </summary>
-        public int FTRank { get; set; }      //внутренняя оценка сервиса
-        /// <summary>
-        /// тип жилья
-        /// </summary>
-        public string rentalType { get; set; }                //тип жилья
+        
         /// <summary>
         /// индекс
         /// </summary>
@@ -78,11 +70,8 @@ namespace FTParser
         /// <summary>
         /// номер улицы(дома)
         /// </summary>
-        public int streetNumber { get; set; }      //номер улицы(дома)
-        /// <summary>
-        /// адрес иконки
-        /// </summary>
-        public string thumbnail { get; set; }           //адрес иконки
+        public string streetNumber { get; set; }      //номер улицы(дома)
+       
         /// <summary>
         /// площадь в  кв. футах
         /// </summary>
@@ -135,44 +124,41 @@ namespace FTParser
         /// </summary>
         public string directLink { get; set; }
 
+        public string addressForLeadForm          {get; set;} 
+        public string apartmentNumber             {get; set;} 
+        public string builderCommunityId          {get; set;} 
+        public string builderName                 {get; set;} 
+        public string formattedLotSize            {get; set;} 
+        public bool hasOpenHouse                {get; set;} 
+        public string indexSource                 {get; set;} 
+        public bool isBuilder                   {get; set;} 
+        public bool isBuilderCommunity          {get; set;} 
+        public bool isForSale                   {get; set;} 
+        public bool isForeclosure               {get; set;} 
+        public bool isPlan                      {get; set;} 
+        public bool isPromotedCommunity         {get; set;} 
+        public bool isRealogy                   {get; set;} 
+        public bool isRental                    {get; set;} 
+        public bool isSpec                      {get; set;} 
+        public bool isSrpFeatured               {get; set;} 
+        public bool isStudio                    {get; set;} 
+        public bool isSubsidized                {get; set;} 
+        public string lastSaleDate                {get; set;} 
+        public string listingType                 {get; set;} 
+        public string pdpURL                      {get; set;} 
+        public string pricePerSqft                {get; set;} 
+        public string rentalPartnerDisplayText    {get; set;} 
+        public string shortDescription            {get; set;} 
+        public string status                      {get; set;} 
+        public string type                        {get; set;} 
+        public string typeDisplay                 {get; set;} 
+        public string yearBuilt                   {get; set;} 
+        public string HomeDetails                 {get; set;} 
+        public string PublicRecords               {get; set;} 
+        public string PetsAllowed                 {get; set;}                                      
 
-        public Offer(ObjectInstance data)
-        {
-            this.addressForDisplay = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.addressForDisplay);
-            this.agentName = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.agentName);
-            this.city = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.city);
-            this.county = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.county);
-            this.countyFIPS = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.countyFIPS);
-            this.dataPhotos = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.dataPhotos);
-            this.feedId = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.feedId);
-            this.formattedBedAndBath = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.formattedBedAndBath);
-            this.formattedPrice = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.formattedPrice);
-            this.formattedSqft = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.formattedSqft);
-            this.hasPhotos = BoolGetFromJintObject(data, Constants.OfferJSObjectKeys.hasPhotos);
-            this.postId = LongGetFromJintObject(data, Constants.OfferJSObjectKeys.id);
-            this.isRentalCommunity = BoolGetFromJintObject(data, Constants.OfferJSObjectKeys.isRentalCommunity);
-            this.latitude = DoubleGetFromJintObject(data, Constants.OfferJSObjectKeys.latitude);
-            this.longitude = DoubleGetFromJintObject(data, Constants.OfferJSObjectKeys.longitude);
-            this.locationId = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.locationId);
-            this.listingId = LongGetFromJintObject(data, Constants.OfferJSObjectKeys.listingId);
-            this.numBathrooms = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.numBathrooms);
-            this.numBedrooms = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.numBedrooms);
-            this.numBeds = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.numBeds);
-            this.numFullBathrooms = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.numFullBathrooms);
-            this.numPartialBathrooms = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.numPartialBathrooms);
-            //this.pdpURL = Resources.BaseLink + StringGetFromJintObject(data, Constants.OfferJSObjectKeys.pdpURL);
-            this.price = DoubleGetFromJintObject(data, Constants.OfferJSObjectKeys.price);
-            this.sqft = DoubleGetFromJintObject(data, Constants.OfferJSObjectKeys.sqft);
-            this.stateCode = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.stateCode);
-            this.stateName = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.stateName);
-            this.street = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.street);
-            this.streetNumber = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.streetNumber);
-            this.thumbnail = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.thumbnail).Replace("//", "https://");
-            this.FTRank = IntGetFromJintObject(data, Constants.OfferJSObjectKeys.FTRank);
-            this.rentalType = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.type);
-            this.zipCode = StringGetFromJintObject(data, Constants.OfferJSObjectKeys.zipCode);
 
-        }
+
 
         internal void FillFromHtmlDocument(IDocument offerDom)
         {
@@ -304,172 +290,8 @@ namespace FTParser
             }
         }
 
+              
 
-
-
-
-
-        /// <summary>
-        /// Возвращает объект типа int из объекта ObjectInstance по заданному строковому параметру 
-        /// </summary>
-        /// <param name="data">Исходный объект</param>
-        /// <param name="propertyName">Параметр(propertyName), который нужно получить</param>
-        /// <returns></returns>
-        internal int IntGetFromJintObject(ObjectInstance data,string propertyName)
-        {
-            try
-            {
-
-
-                if (data.HasProperty(propertyName))
-                {
-                    if (!data.Get(propertyName).IsNull())
-                    {
-                        return Convert.ToInt32(data.Get(propertyName).ToString());
-                    }
-                    else
-                    {
-                        return -1;
-                    }
-
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-        internal double DoubleGetFromJintObject(ObjectInstance data, string propertyName)
-        {
-            try
-            {
-                if (data.HasProperty(propertyName))
-                {
-                    if (!data.Get(propertyName).IsNull())
-                    {
-                        return Convert.ToDouble(data.Get(propertyName).ToString());
-                    }
-                    else
-                    {
-                        return -1;
-                    }
-
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-        internal string StringGetFromJintObject(ObjectInstance data, string propertyName)
-        {
-            try
-            {
-                if (data.HasProperty(propertyName))
-                {
-                    if (!data.Get(propertyName).IsNull())
-                    {
-                        return data.Get(propertyName).ToString();
-                    }
-                    else
-                    {
-                        return String.Empty;
-                    }
-
-                }
-                else
-                {
-                    return String.Empty;
-                }
-            }
-            catch
-            {
-                return String.Empty;
-            }            
-        }
-        internal long LongGetFromJintObject(ObjectInstance data, string propertyName)
-        {
-            try
-            {
-
-
-                if (data.HasProperty(propertyName))
-                {
-                    if (!data.Get(propertyName).IsNull())
-                    {
-                        return Convert.ToInt64(data.Get(propertyName).ToString());
-                    }
-                    else
-                    {
-                        return -1;
-                    }
-
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-            catch
-            {
-                return -1;
-            }
-        }
-        internal bool BoolGetFromJintObject(ObjectInstance data, string propertyName)
-        {
-            try
-            {
-
-
-                if (data.HasProperty(propertyName))
-                {
-                    if (!data.Get(propertyName).IsNull())
-                    {
-                        return Convert.ToBoolean(data.Get(propertyName).ToString());
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        //public static void Print(Offer o)
-        //{
-        //    Console.WriteLine("City: " + o.City);
-        //    Console.WriteLine("ID); " + o.PostID);
-        //    Console.WriteLine("Name); " + o.Name);
-        //    Console.WriteLine("Price); " + o.Price);
-        //    Console.WriteLine("PlaceName); " + o.PlaceName);
-        //    Console.WriteLine("PlaceMapsLink); " + o.PlaceMapsLink);
-        //    Console.WriteLine("Description); " + o.Description);
-        //    Console.WriteLine("BathRooms); " + o.BathRooms);
-        //    Console.WriteLine("BedRooms); " + o.BedRooms);
-        //    Console.WriteLine("Square); " + o.Square);
-        //    Console.WriteLine("Availability); " + o.Availability);
-        //    Console.WriteLine("Additional); " + o.Additional);
-        //    Console.WriteLine("Images); " + o.Images);
-        //    Console.WriteLine("Posted); " + o.Posted);
-        //    Console.WriteLine("Updated); " + o.Updated);
-        //}
 
     }
 

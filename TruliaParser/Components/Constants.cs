@@ -53,41 +53,80 @@ namespace FTParser.Components
             public const string href = "href";
             public const string NotFound = "no";
         }
-        public class OfferJSObjectKeys
+        public class HomePropertyJSObjectKeys
         {
             public const string id = "id";
-            public const string agentName = "agentName";
-            public const string city = "city";
-            public const string county = "county";
-            public const string countyFIPS = "countyFIPS";
-            public const string dataPhotos = "dataPhotos";
-            public const string feedId = "feedId";
-            public const string formattedBedAndBath = "formattedBedAndBath";
-            public const string formattedPrice = "formattedPrice";
-            public const string formattedSqft = "formattedSqft";
-            public const string hasPhotos = "hasPhotos";
-            public const string isRentalCommunity = "isRentalCommunity";
-            public const string latitude = "latitude";
-            public const string longitude = "longitude";
-            public const string locationId = "locationId";
-            public const string listingId = "listingId";
-            public const string numBathrooms = "numBathrooms";
-            public const string numBedrooms = "numBedrooms";
-            public const string numBeds = "numBeds";
-            public const string numFullBathrooms = "numFullBathrooms";
-            public const string numPartialBathrooms = "numPartialBathrooms";
-            public const string pdpURL = "pdpURL";
-            public const string price = "price";
-            public const string FTRank = "FTRank";
-            public const string type = "type";
-            public const string zipCode = "zipCode";
-            public const string streetNumber = "streetNumber";
-            public const string thumbnail = "thumbnail";
-            public const string sqft = "sqft";
-            public const string stateCode = "stateCode";
-            public const string stateName = "stateName";
-            public const string street = "street";
-            public const string addressForDisplay = "addressForDisplay";
+            
+            
+
+
+            public const string addressForDisplay =           "addressForDisplay";
+            public const string addressForLeadForm          = "addressForLeadForm";
+            public const string agentName                   = "agentName";
+            public const string apartmentNumber             = "apartmentNumber";
+            public const string builderCommunityId          = "builderCommunityId";
+            public const string builderName                 = "builderName";
+            public const string city                        = "city";
+            public const string county                      = "county";
+            public const string countyFIPS                  = "countyFIPS";
+            public const string dataPhotos                  = "dataPhotos";
+            public const string formattedBedAndBath         = "formattedBedAndBath";
+            public const string formattedLotSize            = "formattedLotSize";
+            public const string formattedPrice              = "formattedPrice";
+            public const string formattedSqft               = "formattedSqft";
+            public const string hasOpenHouse                = "hasOpenHouse";
+            public const string hasPhotos                   = "hasPhotos";
+            public const string postId                      = "id";
+            public const string indexSource                 = "indexSource";
+            public const string isBuilder                   = "isBuilder";
+            public const string isBuilderCommunity          = "isBuilderCommunity";
+            public const string isForSale                   = "isForSale";
+            public const string isForeclosure               = "isForeclosure";
+            public const string isPlan                      = "isPlan";
+            public const string isPromotedCommunity         = "isPromotedCommunity";
+            public const string isRealogy                   = "isRealogy";
+            public const string isRental                    = "isRental";
+            public const string isRentalCommunity           = "isRentalCommunity";
+            public const string isSpec                      = "isSpec";
+            public const string isSrpFeatured               = "isSrpFeatured";
+            public const string isStudio                    = "isStudio";
+            public const string isSubsidized                = "isSubsidized";
+            public const string lastSaleDate                = "lastSaleDate";
+            public const string latitude                    = "latitude";
+            public const string listingId                   = "listingId";
+            public const string listingType                 = "listingType";
+            public const string locationId                  = "locationId";
+            public const string longitude                   = "longitude";
+            public const string numBathrooms                = "numBathrooms";
+            public const string numBedrooms                 = "numBedrooms";
+            public const string numBeds                     = "numBeds";
+            public const string numFullBathrooms            = "numFullBathrooms";
+            public const string numPartialBathrooms         = "numPartialBathrooms";
+            public const string pdpURL                      = "pdpURL";
+            public const string price                       = "price";
+            public const string pricePerSqft                = "pricePerSqft";
+            public const string rentalPartnerDisplayText    = "rentalPartnerDisplayText";
+            public const string shortDescription            = "shortDescription";
+            public const string stateCode                   = "stateCode";
+            public const string stateName                   = "stateName";
+            public const string status                      = "status";
+            public const string sqft                        = "sqft";
+            public const string street                      = "street";
+            public const string streetNumber                = "streetNumber";
+            public const string type                        = "type";
+            public const string typeDisplay                 = "typeDisplay";
+            public const string yearBuilt                   = "yearBuilt";
+            public const string zipCode                     = "zipCode";
+            public const string HomeDetails                 = "HomeDetails";
+            public const string Features                    = "Features";
+            public const string PetsAllowed                 = "PetsAllowed";
+            public const string idealIncome                 = "idealIncome";
+            public const string communityOtherFeatures      = "communityOtherFeatures";
+            public const string communityFloors             = "communityFloors";
+            public const string Link                        = "Link";
+            public const string phone                       = "phone";                     
+            
+
         }
 
         public class OfferListSelectors
@@ -101,50 +140,83 @@ namespace FTParser.Components
         }
 
 
-        public class OfferCellNames
+        public class HomeCellNames
         {
-            public const string postId = "@postId";
-            public const string agentName = "@agentName";
-            public const string addressForDisplay = "@addressForDisplay";
-            public const string city = "@city";
-            public const string county = "@county";
-            public const string countyFIPS = "@countyFIPS";
-            public const string dataPhotos = "@dataPhotos";
-            public const string feedId = "@feedId";
-            public const string formattedBedAndBath = "@formattedBedAndBath";
-            public const string formattedPrice = "@formattedPrice";
-            public const string formattedSqft = "@formattedSqft";
-            public const string hasPhotos = "@hasPhotos";
-            public const string isRentalCommunity = "@isRentalCommunity";
-            public const string latitude = "@latitude";
-            public const string longitude = "@longitude";
-            public const string locationId = "@locationId";
-            public const string listingId = "@listingId";
-            public const string numBathrooms = "@numBathrooms";
-            public const string numBedrooms = "@numBedrooms";
-            public const string numBeds = "@numBeds";
-            public const string numFullBathrooms = "@numFullBathrooms";
-            public const string numPartialBathrooms = "@numPartialBathrooms";
-            public const string price = "@price";
-            public const string FTRank = "@FTRank";
-            public const string rentalType = "@rentalType";
-            public const string zipCode = "@zipCode";
-            public const string streetNumber = "@streetNumber";
-            public const string thumbnail = "@thumbnail";
-            public const string sqft = "@sqft";
-            public const string stateCode = "@stateCode";
-            public const string stateName = "@stateName";
-            public const string street = "@street";
-            public const string phone = "@phone";
-            public const string idealIncome = "@idealIncome";
-            public const string metaInfo = "@metaInfo";
-            public const string features = "@features";
-            public const string communityOtherFeatures = "@communityOtherFeatures";
-            public const string communityFloors = "@communityFloors";
-            public const string directLink = "@directLink";
+           public const string @addressForDisplay            = "@addressForDisplay";
+           public const string @addressForLeadForm           = "@addressForLeadForm";
+           public const string @agentName                    = "@agentName";
+           public const string @apartmentNumber              = "@apartmentNumber";
+           public const string @builderCommunityId           = "@builderCommunityId";
+           public const string @builderName                  = "@builderName";
+           public const string @city                         = "@city";
+           public const string @county                       = "@county";
+           public const string @countyFIPS                   = "@countyFIPS";
+           public const string @dataPhotos                   = "@dataPhotos";
+           public const string @formattedBedAndBath          = "@formattedBedAndBath";
+           public const string @formattedLotSize             = "@formattedLotSize";
+           public const string @formattedPrice               = "@formattedPrice";
+           public const string @formattedSqft                = "@formattedSqft";
+           public const string @hasOpenHouse                 = "@hasOpenHouse";
+           public const string @hasPhotos                    = "@hasPhotos";
+           public const string @postId                       = "@postId";
+           public const string @indexSource                  = "@indexSource";
+           public const string @isBuilder                    = "@isBuilder";
+           public const string @isBuilderCommunity           = "@isBuilderCommunity";
+           public const string @isForSale                    = "@isForSale";
+           public const string @isForeclosure                = "@isForeclosure";
+           public const string @isPlan                       = "@isPlan";
+           public const string @isPromotedCommunity          = "@isPromotedCommunity";
+           public const string @isRealogy                    = "@isRealogy";
+           public const string @isRental                     = "@isRental";
+           public const string @isRentalCommunity            = "@isRentalCommunity";
+           public const string @isSpec                       = "@isSpec";
+           public const string @isSrpFeatured                = "@isSrpFeatured";
+           public const string @isStudio                     = "@isStudio";
+           public const string @isSubsidized                 = "@isSubsidized";
+           public const string @lastSaleDate                 = "@lastSaleDate";
+           public const string @latitude                     = "@latitude";
+           public const string @listingId                    = "@listingId";
+           public const string @listingType                  = "@listingType";
+           public const string @locationId                   = "@locationId";
+           public const string @longitude                    = "@longitude";
+           public const string @numBathrooms                 = "@numBathrooms";
+           public const string @numBedrooms                  = "@numBedrooms";
+           public const string @numBeds                      = "@numBeds";
+           public const string @numFullBathrooms             = "@numFullBathrooms";
+           public const string @numPartialBathrooms          = "@numPartialBathrooms";
+           public const string @pdpURL                       = "@pdpURL";
+           public const string @price                        = "@price";
+           public const string @pricePerSqft                 = "@pricePerSqft";
+           public const string @rentalPartnerDisplayText     = "@rentalPartnerDisplayText";
+           public const string @shortDescription             = "@shortDescription";
+           public const string @stateCode                    = "@stateCode";
+           public const string @stateName                    = "@stateName";
+           public const string @status                       = "@status";
+           public const string @street                       = "@street";
+           public const string @streetNumber                 = "@streetNumber";
+           public const string @type                         = "@type";
+           public const string @typeDisplay                  = "@typeDisplay";
+           public const string @yearBuilt                    = "@yearBuilt";
+           public const string @zipCode                      = "@zipCode";
+           public const string @HomeDetails                  = "@HomeDetails";
+           public const string @Features                     = "@Features";
+           public const string @PublicRecords                = "@PublicRecords";
+           public const string @PetsAllowed                  = "@PetsAllowed";
+           public const string @idealIncome                  = "@idealIncome";
+           public const string @metaInfo                     = "@metaInfo";
+           public const string @communityOtherFeatures       = "@communityOtherFeatures";
+           public const string @communityFloors              = "@communityFloors";
+           public const string @Link                         = "@Link";
+           public const string @phone                        = "@phone";
+           public const string @ComparablesJSON              = "@ComparablesJSON";         
+        }
 
-
-
+        public class CrimeCellNames
+        {
+            public const string @Home_ID = "@Home_ID";
+            public const string @Date = "@Date";
+            public const string @Type = "@Type";
+            public const string @Description = "@Description";
         }
 
         public class RegionLinkDbParams

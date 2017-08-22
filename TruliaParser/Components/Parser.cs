@@ -14,6 +14,7 @@ using OpenQA.Selenium.PhantomJS;
 using FT.Components;
 using NLog;
 
+
 namespace FTParser.Components
 {
     class Parser
@@ -72,7 +73,8 @@ namespace FTParser.Components
             driver.Quit();
         }
 
-        public static bool ParseHomes(Street street)
+        // public static List<string> ParseHomes(Street street)
+        public static List<string> ParseHomes(string Link)
         { 
           PhantomJSDriver driver = CreateDriver();
 
@@ -88,7 +90,7 @@ namespace FTParser.Components
                 {
                     try
                     {
-                        driver.Navigate().GoToUrl(street.Link);
+                        driver.Navigate().GoToUrl(Link);
                         break;
                     }
                     catch (Exception ex)
@@ -107,7 +109,7 @@ namespace FTParser.Components
                     var homelinks = driver.FindElementsByCssSelector(".mvm a"); //выбираем элементы, в которых есть нужные нам ссылки
                     if (homelinks.Count == 0) //т.е. улица пуста
                     {
-                        return true;
+                        return homeHrefs;
                     }
 
                     foreach (var a in homelinks)
@@ -158,6 +160,129 @@ namespace FTParser.Components
 
                     Console.WriteLine(link);
                 }
+                return homeHrefs; //все прошло успешно
+            }
+            catch (OpenQA.Selenium.WebDriverException ex)
+            {
+                logger.Error(ex, "Возникло исключение web-драйвера: {1}, {0}", ex.StackTrace, ex.Message);
+                return null;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Возникло неизвестное исключение: {1}, {0}", ex.StackTrace, ex.Message);
+                return null;
+            }
+            finally
+            {
+                driver.Quit();
+            }
+        }
+
+        public static bool ParseProperty(string link)
+        {
+            PhantomJSDriver driver = CreateDriver();
+
+            try
+            {
+                if (driver.SessionId == null)
+                {
+                    driver = CreateDriver();
+                }
+
+                //переход по стартовой ссылке города
+                while (true)
+                {
+                    try
+                    {
+                        driver.Navigate().GoToUrl(link);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло. {0},{1}", ex.Message, ex.StackTrace);
+                        driver.Quit();
+                        driver = CreateDriver();
+                    }
+                }
+                
+                if (!link.Contains("sold"))
+                {
+                    Console.WriteLine("Property isn't sold."+ link);
+                    logger.Info("Property isn't sold. {0}", link);
+                    return false;
+                }
+
+                Dictionary<string, object> mainProperties = driver.ExecuteScript("return trulia.pdp.propertyJSON") as Dictionary<string, object>;
+                HomeProperty hp = new HomeProperty();
+                hp.addressForDisplay = (string)mainProperties[Constants.HomePropertyJSObjectKeys.addressForDisplay];
+                hp.addressForLeadForm = (string)mainProperties[Constants.HomePropertyJSObjectKeys.addressForLeadForm];
+                hp.agentName = (string)mainProperties[Constants.HomePropertyJSObjectKeys.agentName];
+                hp.apartmentNumber = (string)mainProperties[Constants.HomePropertyJSObjectKeys.apartmentNumber];
+                hp.builderCommunityId = (string)mainProperties[Constants.HomePropertyJSObjectKeys.builderCommunityId];
+                hp.builderName = (string)mainProperties[Constants.HomePropertyJSObjectKeys.builderName];
+                hp.city = (string)mainProperties[Constants.HomePropertyJSObjectKeys.city];
+                hp.communityFloors = null; //!!!
+                hp.communityOtherFeatures = null;   //!!!
+                hp.county = (string)mainProperties[Constants.HomePropertyJSObjectKeys.county];
+                hp.countyFIPS = (string)mainProperties[Constants.HomePropertyJSObjectKeys.countyFIPS];
+                hp.dataPhotos = (string)mainProperties[Constants.HomePropertyJSObjectKeys.dataPhotos];
+                hp.description = null; //!!!!!!!!!!!!!!!!
+                hp.directLink = link;
+                hp.features = null; //!!!!!!!!!!
+                hp.formattedBedAndBath = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedBedAndBath];
+                hp.formattedLotSize = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedLotSize];
+                hp.formattedPrice = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedPrice];
+                hp.formattedSqft = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedSqft];
+                hp.hasOpenHouse = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.hasOpenHouse];
+                hp.hasPhotos = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.hasPhotos];
+                hp.HomeDetails = null; //!!!!
+                hp.idealIncome = -1; //!!!!
+                hp.indexSource = (string)mainProperties[Constants.HomePropertyJSObjectKeys.indexSource];
+                hp.isBuilder = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isBuilder];
+                hp.isBuilderCommunity = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isBuilderCommunity];
+                hp.isForeclosure = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isForeclosure];
+                hp.isForSale = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isForSale];
+                hp.isPlan = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isPlan];
+                hp.isPromotedCommunity = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isPromotedCommunity];
+                hp.isRealogy = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isRealogy];
+                hp.isRental = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isRental];
+                hp.isRentalCommunity = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isRentalCommunity];
+                hp.isSpec = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isSpec];
+                hp.isSrpFeatured = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isSrpFeatured];
+                hp.isStudio = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isStudio];
+                hp.isSubsidized = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isSubsidized];
+                hp.lastSaleDate = (string)mainProperties[Constants.HomePropertyJSObjectKeys.lastSaleDate];
+                hp.latitude = (double)mainProperties[Constants.HomePropertyJSObjectKeys.latitude];
+                hp.listingId = (long)mainProperties[Constants.HomePropertyJSObjectKeys.listingId];
+                hp.listingType = (string)mainProperties[Constants.HomePropertyJSObjectKeys.listingType];
+                hp.locationId = (string)mainProperties[Constants.HomePropertyJSObjectKeys.locationId];
+                hp.longitude = (double)mainProperties[Constants.HomePropertyJSObjectKeys.longitude];
+                hp.metaInfo = null;//!!!!
+                hp.numBathrooms = (int)mainProperties[Constants.HomePropertyJSObjectKeys.numBathrooms];
+                hp.numBedrooms = (int)mainProperties[Constants.HomePropertyJSObjectKeys.numBedrooms];
+                hp.numBeds = (int)mainProperties[Constants.HomePropertyJSObjectKeys.numBeds];
+                hp.numFullBathrooms = (int)mainProperties[Constants.HomePropertyJSObjectKeys.numFullBathrooms];
+                hp.numPartialBathrooms = (int)mainProperties[Constants.HomePropertyJSObjectKeys.numPartialBathrooms];
+                hp.pdpURL = (string)mainProperties[Constants.HomePropertyJSObjectKeys.pdpURL];
+                hp.PetsAllowed = null;// !!!!!!!!!!!
+                hp.phone = null;//!!!!!!!
+                hp.postId = (long)mainProperties[Constants.HomePropertyJSObjectKeys.postId];
+                hp.pricePerSqft = (string)mainProperties[Constants.HomePropertyJSObjectKeys.pricePerSqft];
+                hp.PublicRecords = null; //!!!!!!
+                hp.rentalPartnerDisplayText = (string)mainProperties[Constants.HomePropertyJSObjectKeys.rentalPartnerDisplayText];
+                hp.type = (string)mainProperties[Constants.HomePropertyJSObjectKeys.type];
+                hp.typeDisplay = (string)mainProperties[Constants.HomePropertyJSObjectKeys.typeDisplay];
+                hp.shortDescription = (string)mainProperties[Constants.HomePropertyJSObjectKeys.shortDescription];
+                hp.sqft = (double)mainProperties[Constants.HomePropertyJSObjectKeys.sqft];
+                hp.stateCode = (string)mainProperties[Constants.HomePropertyJSObjectKeys.stateCode];
+                hp.stateName = (string)mainProperties[Constants.HomePropertyJSObjectKeys.stateName];
+                hp.status = (string)mainProperties[Constants.HomePropertyJSObjectKeys.status];
+                hp.street = (string)mainProperties[Constants.HomePropertyJSObjectKeys.street];
+                hp.streetNumber = (string)mainProperties[Constants.HomePropertyJSObjectKeys.streetNumber];
+                hp.yearBuilt = (string)mainProperties[Constants.HomePropertyJSObjectKeys.yearBuilt];
+                hp.zipCode = (string)mainProperties[Constants.HomePropertyJSObjectKeys.zipCode];
+
+
                 return true; //все прошло успешно
             }
             catch (OpenQA.Selenium.WebDriverException ex)
@@ -552,10 +677,10 @@ namespace FTParser.Components
                 {
                     ObjectInstance basicData = offerDom.ExecuteScript("ourdata") as ObjectInstance; //получаем JS-переменную, и теперь по ключам вытаскиваем данные
                     Console.WriteLine("Получена страница: {0}", offerLink);
-                    Offer o = new Offer(basicData);
-                    o.directLink = offerLink;
-                    o.FillFromHtmlDocument(offerDom);
-                    DataProvider.Instance.InsertOfferToDb(o);
+                    //Offer o = new Offer(basicData);
+                    //o.directLink = offerLink;
+                    //o.FillFromHtmlDocument(offerDom);
+                    //DataProvider.Instance.InsertOfferToDb(o);
                 }
                 catch (Exception ex)
                 {

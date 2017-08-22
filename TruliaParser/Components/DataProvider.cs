@@ -318,55 +318,43 @@ namespace FTParser.DataProviders
             }
         }
 
-        internal void InsertOfferToDb(Offer o)
+     /*   internal void InsertOfferToDb(Offer o)
         {
             try
             {
                 SqlCommand insertOffer = Instance.CreateSQLCommandForSP(Resources.SP_InsertOffer);
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.postId, o.postId);
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.agentName,             ((object)o.agentName                 )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.addressForDisplay,     ((object)o.addressForDisplay         )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.city,                  o.city                  );
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.county,               o.county               );
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.countyFIPS,            ((object)o.countyFIPS                )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.dataPhotos,            ((object)o.dataPhotos                )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.feedId,                ((object)o.feedId                    )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.formattedBedAndBath,   ((object)o.formattedBedAndBath       )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.formattedPrice,        ((object)o.formattedPrice            )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.formattedSqft,         ((object)o.formattedSqft             )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.hasPhotos,             ((object)o.hasPhotos                 )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.isRentalCommunity,     ((object)o.isRentalCommunity         )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.latitude,              ((object)o.latitude                  )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.longitude,             ((object)o.longitude                 )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.locationId,            ((object)o.locationId                )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.listingId,             ((object)o.listingId                 )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.numBathrooms,          ((object)o.numBathrooms              )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.numBedrooms,           ((object)o.numBedrooms               )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.numBeds,               ((object)o.numBeds                   )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.numFullBathrooms,      ((object)o.numFullBathrooms          )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.numPartialBathrooms,   ((object)o.numPartialBathrooms       )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.price,                 ((object)o.price                     )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.FTRank,            ((object)o.FTRank                )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.rentalType,            ((object)o.rentalType                )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.zipCode,               ((object)o.zipCode                   )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.streetNumber,          ((object)o.streetNumber              )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.thumbnail,             ((object)o.thumbnail                 )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.sqft,                  ((object)o.sqft                      )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.stateCode,                      o.stateCode             );
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.stateName,                      o.stateName         );
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.street,                ((object)o.street                    )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.phone,                 ((object)o.phone                     )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.idealIncome,           ((object)o.idealIncome               )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.metaInfo,              ((object)o.metaInfo                  )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.features,              ((object)o.features                  )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.communityOtherFeatures,((object)o.communityOtherFeatures    )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.communityFloors,       ((object)o.communityFloors           )??(DBNull.Value));
-                insertOffer.Parameters.AddWithValue(Constants.OfferCellNames.directLink,           o.directLink           );
-
-
-
-
-
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.postId, o.postId);
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.agentName,             ((object)o.agentName                 )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.addressForDisplay,     ((object)o.addressForDisplay         )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.city,                  o.city                  );
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.county,               o.county               );
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.countyFIPS,            ((object)o.countyFIPS                )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.dataPhotos,            ((object)o.dataPhotos                )??(DBNull.Value));               
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.formattedBedAndBath,   ((object)o.formattedBedAndBath       )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.formattedPrice,        ((object)o.formattedPrice            )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.formattedSqft,         ((object)o.formattedSqft             )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.hasPhotos,             ((object)o.hasPhotos                 )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.isRentalCommunity,     ((object)o.isRentalCommunity         )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.latitude,              ((object)o.latitude                  )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.longitude,             ((object)o.longitude                 )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.locationId,            ((object)o.locationId                )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.listingId,             ((object)o.listingId                 )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.numBathrooms,          ((object)o.numBathrooms              )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.numBedrooms,           ((object)o.numBedrooms               )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.numBeds,               ((object)o.numBeds                   )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.numFullBathrooms,      ((object)o.numFullBathrooms          )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.numPartialBathrooms,   ((object)o.numPartialBathrooms       )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.price,                 ((object)o.price                     )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.zipCode,               ((object)o.zipCode                   )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.streetNumber,          ((object)o.streetNumber              )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.stateCode,                      o.stateCode             );
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.stateName,                      o.stateName         );
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.street,                ((object)o.street                    )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.phone,                 ((object)o.phone                     )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.idealIncome,           ((object)o.idealIncome               )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.metaInfo,              ((object)o.metaInfo                  )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.communityOtherFeatures,((object)o.communityOtherFeatures    )??(DBNull.Value));
+                insertOffer.Parameters.AddWithValue(Constants.HomeCellNames.communityFloors,       ((object)o.communityFloors           )??(DBNull.Value));
 
 
                 Instance.ExecureSP(insertOffer);
@@ -378,7 +366,7 @@ namespace FTParser.DataProviders
                 throw new Exception(ex.Message);
             }
         }
-
+        */
         #endregion
 
 
