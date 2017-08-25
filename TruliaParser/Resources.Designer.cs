@@ -178,6 +178,33 @@ namespace TruliaParser {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на SP_AddNewCrime.
+        /// </summary>
+        internal static string SP_AddNewCrime {
+            get {
+                return ResourceManager.GetString("SP_AddNewCrime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SP_AddNewHome.
+        /// </summary>
+        internal static string SP_AddNewHome {
+            get {
+                return ResourceManager.GetString("SP_AddNewHome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на SP_AddNewSchool.
+        /// </summary>
+        internal static string SP_AddNewSchool {
+            get {
+                return ResourceManager.GetString("SP_AddNewSchool", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на SP_AddNewState.
         /// </summary>
         internal static string SP_AddNewState {
@@ -219,15 +246,6 @@ namespace TruliaParser {
         internal static string SP_InsertOffer {
             get {
                 return ResourceManager.GetString("SP_InsertOffer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на .
-        /// </summary>
-        internal static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
     }

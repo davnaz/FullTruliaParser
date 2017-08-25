@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using AngleSharp.Dom;
 using Jint.Native.Object;
 using FTParser.Components;
+using System.Data.SqlClient;
+using TruliaParser;
+using NLog;
+using FT.Components;
 
 namespace FTParser
 {
     internal class HomeProperty
     {
+        protected static Logger logger = LogManager.GetCurrentClassLogger();
         //Это те, которые берутся из JS-переменной
         public long postId { get; set; }     
         /// <summary>
@@ -152,12 +157,106 @@ namespace FTParser
         public string status                      {get; set;} 
         public string type                        {get; set;} 
         public string typeDisplay                 {get; set;} 
-        public string yearBuilt                   {get; set;} 
+        public int yearBuilt                   {get; set;} 
         public string HomeDetails                 {get; set;} 
         public string PublicRecords               {get; set;} 
-        public string PetsAllowed                 {get; set;}                                      
+        public string PetsAllowed                 {get; set;}   
+        public string ComparablesJSON {get; set;}
 
+        /// <summary>
+        /// Записывает Property в БД и возвращает ID записанной строки
+        /// </summary>
+        /// <returns>ID записанной строки</returns>
+        public long InsertToDb()
+        {
+            try
+            {
 
+            
+            SqlCommand insertHP = DataProviders.DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_AddNewHome);
+            if(this.addressForDisplay != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.addressForDisplay,   this.addressForDisplay                                   );}
+            if(this.addressForLeadForm != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.addressForLeadForm,                    this.addressForLeadForm              );}
+            if(this.agentName != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.agentName                           ,this.agentName                                  );}
+            if(this.apartmentNumber != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.apartmentNumber                       ,this.apartmentNumber                    );}
+            if(this.builderCommunityId != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.builderCommunityId                    ,this.builderCommunityId              );}
+            if(this.builderName != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.builderName                           ,this.builderName                            );}
+            if(this.city != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.city                                  ,this.city                                          );}
+            if(this.communityFloors != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.communityFloors                       ,this.communityFloors                    );}
+            if(this.communityOtherFeatures != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.communityOtherFeatures                ,this.communityOtherFeatures      );}
+            if(this.ComparablesJSON != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.ComparablesJSON                       ,this.ComparablesJSON                    );}
+            if(this.county != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.county                                ,this.county                                      );}
+            if(this.countyFIPS != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.countyFIPS                            ,this.countyFIPS                              );}
+            if(this.dataPhotos != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.dataPhotos                            ,this.dataPhotos                              );}
+            if(this.description != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.Description                        ,this.description                               );}
+            if(this.directLink != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.Link                       ,this.directLink                                         );}
+            if(this.features != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.Features                              ,this.features                                  );}
+            if(this.formattedBedAndBath != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.formattedBedAndBath                   ,this.formattedBedAndBath            );}
+            if(this.formattedLotSize != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.formattedLotSize                      ,this.formattedLotSize                  );}
+            if(this.formattedPrice != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.formattedPrice                        ,this.formattedPrice                      );}
+            if(this.formattedSqft != null){ insertHP.Parameters.AddWithValue(Constants.HomeCellNames.formattedSqft, this.formattedSqft); }
+ 
+             insertHP.Parameters.AddWithValue(Constants.HomeCellNames.hasOpenHouse, this.hasOpenHouse);
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.hasPhotos,this.hasPhotos);
+            if(this.HomeDetails != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.HomeDetails, this.HomeDetails     );}
+            if(this.idealIncome != -1){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.idealIncome, Convert.ToInt32( this.idealIncome )     );}
+            if (this.indexSource != null) { insertHP.Parameters.AddWithValue(Constants.HomeCellNames.indexSource, this.indexSource); }
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isBuilder                               ,this.isBuilder            );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isBuilderCommunity                      ,this.isBuilderCommunity   );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isForeclosure                           ,this.isForeclosure        );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isForSale                               ,this.isForSale            );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isPlan                                  ,this.isPlan               );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isPromotedCommunity                     ,this.isPromotedCommunity  );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isRealogy                               ,this.isRealogy            );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isRental                                ,this.isRental             );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isRentalCommunity                       ,this.isRentalCommunity    );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isSpec                                  ,this.isSpec               );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isSrpFeatured                           ,this.isSrpFeatured        );
+            insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isStudio                                ,this.isStudio             );
+                        insertHP.Parameters.AddWithValue(Constants.HomeCellNames.isSubsidized, this.isSubsidized);
+                        if (this.lastSaleDate != null) { insertHP.Parameters.AddWithValue(Constants.HomeCellNames.lastSaleDate, this.lastSaleDate); }
+ 
+             insertHP.Parameters.AddWithValue(Constants.HomeCellNames.latitude, this.latitude);
+            if(this.listingId != 0){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.listingId          ,this.listingId      );         }    
+            if(this.listingType != null){ insertHP.Parameters.AddWithValue(Constants.HomeCellNames.listingType, this.listingType);           }
+                            if (this.locationId != null) { insertHP.Parameters.AddWithValue(Constants.HomeCellNames.locationId, this.locationId); }
+ 
+             insertHP.Parameters.AddWithValue(Constants.HomeCellNames.longitude, this.longitude);
+            if (this.metaInfo != null) { insertHP.Parameters.AddWithValue(Constants.HomeCellNames.metaInfo, this.metaInfo); }
+            if(this.numBathrooms != -1){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.numBathrooms                             ,this.numBathrooms              );}
+            if(this.numBedrooms != -1){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.numBedrooms                               ,this.numBedrooms               );}
+            if(this.numBeds != -1){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.numBeds                                       ,this.numBeds                   );}
+            if(this.numFullBathrooms != -1){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.numFullBathrooms                     ,this.numFullBathrooms          );}
+            if(this.numPartialBathrooms != -1){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.numPartialBathrooms               ,this.numPartialBathrooms       );}
+            if(this.pdpURL != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.pdpURL                                       ,this.pdpURL                    );}
+            if(this.PetsAllowed != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.PetsAllowed                             ,this.PetsAllowed               );}
+            if(this.phone != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.phone                                         ,this.phone                     );}
+            if(this.postId != -1){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.postId                                         ,this.postId                    );}
+            if(this.price != 0){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.price                                            ,Convert.ToInt32(this.price )               );}
+            if(this.pricePerSqft != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.pricePerSqft                           ,this.pricePerSqft              );}
+            if(this.PublicRecords != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.PublicRecords                         ,this.PublicRecords             );}
+            if(this.rentalPartnerDisplayText != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.rentalPartnerDisplayText   ,this.rentalPartnerDisplayText  );}
+            if(this.shortDescription != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.shortDescription                   ,this.shortDescription          );}
+            if(this.sqft != 0)           {insertHP.Parameters.AddWithValue(Constants.HomeCellNames.sqft                                   ,this.sqft                      );}
+            if(this.stateCode != null)   {insertHP.Parameters.AddWithValue(Constants.HomeCellNames.stateCode                              ,this.stateCode                 );}
+            if(this.stateName != null)   {insertHP.Parameters.AddWithValue(Constants.HomeCellNames.stateName                              ,this.stateName                 );}
+            if(this.status != null)      {insertHP.Parameters.AddWithValue(Constants.HomeCellNames.status                                 ,this.status                    );}
+            if(this.street != null)      {insertHP.Parameters.AddWithValue(Constants.HomeCellNames.street                                 ,this.street                    );}
+            if(this.streetNumber != null){insertHP.Parameters.AddWithValue(Constants.HomeCellNames.streetNumber                           ,this.streetNumber              );}
+            if(this.type != null)        {insertHP.Parameters.AddWithValue(Constants.HomeCellNames.type                                   ,this.type                      );}
+            if(this.typeDisplay != null) {insertHP.Parameters.AddWithValue(Constants.HomeCellNames.typeDisplay                            ,this.typeDisplay               );}
+            if(this.yearBuilt != 0)      {insertHP.Parameters.AddWithValue(Constants.HomeCellNames.yearBuilt                              ,this.yearBuilt                 );}
+            if (this.zipCode != null)    {insertHP.Parameters.AddWithValue(Constants.HomeCellNames.zipCode                                ,this.zipCode                   );}
+                long homeId = -1;
+                homeId = DataProviders.DataProvider.Instance.ExecureSPWithRetVal(insertHP);
+                return homeId;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Ошибка при добавлении записи в Properties: {0}, {1}",ex.Message, ex.StackTrace);
+                logger.Error("Ошибка при добавлении записи в Properties: {0}, {1}", ex.Message, ex.StackTrace);
+                return -1;
+            }
+        }
 
 
         internal void FillFromHtmlDocument(IDocument offerDom)

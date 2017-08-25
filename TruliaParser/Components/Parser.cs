@@ -13,7 +13,8 @@ using TruliaParser;
 using OpenQA.Selenium.PhantomJS;
 using FT.Components;
 using NLog;
-
+using System.Globalization;
+using OpenQA.Selenium;
 
 namespace FTParser.Components
 {
@@ -73,24 +74,24 @@ namespace FTParser.Components
             driver.Quit();
         }
 
-        // public static List<string> ParseHomes(Street street)
-        public static List<string> ParseHomes(string Link)
-        { 
-          PhantomJSDriver driver = CreateDriver();
+        public static List<string> ParseHomes(Street street)
+        //public static List<string> ParseHomes(string Link)
+        {
+            PhantomJSDriver driver = CreateDriver();
 
             try
             {
                 if (driver.SessionId == null)
                 {
                     driver = CreateDriver();
-    }
+                }
 
                 //переход по стартовой ссылке города
                 while (true)
                 {
                     try
                     {
-                        driver.Navigate().GoToUrl(Link);
+                        driver.Navigate().GoToUrl(street.Link);
                         break;
                     }
                     catch (Exception ex)
@@ -155,7 +156,7 @@ namespace FTParser.Components
                         break;
                     }
                 }
-                foreach(string link in homeHrefs) //а теперь сам процесс обработки домов по ссылкам
+                foreach (string link in homeHrefs) //а теперь сам процесс обработки домов по ссылкам
                 {
 
                     Console.WriteLine(link);
@@ -200,89 +201,116 @@ namespace FTParser.Components
                     catch (Exception ex)
                     {
                         logger.Trace(ex, "Ошибка получения страницы, время ожидания истекло. {0},{1}", ex.Message, ex.StackTrace);
+                        logger.Error(ex, "Ошибка получения страницы, время ожидания истекло. {0},{1}", ex.Message, ex.StackTrace);
                         driver.Quit();
                         driver = CreateDriver();
                     }
                 }
-                
+
                 if (!link.Contains("sold"))
                 {
-                    Console.WriteLine("Property isn't sold."+ link);
+                    Console.WriteLine("Property isn't sold." + link);
                     logger.Info("Property isn't sold. {0}", link);
                     return false;
                 }
 
                 Dictionary<string, object> mainProperties = driver.ExecuteScript("return trulia.pdp.propertyJSON") as Dictionary<string, object>;
                 HomeProperty hp = new HomeProperty();
-                hp.addressForDisplay = (string)mainProperties[Constants.HomePropertyJSObjectKeys.addressForDisplay];
-                hp.addressForLeadForm = (string)mainProperties[Constants.HomePropertyJSObjectKeys.addressForLeadForm];
-                hp.agentName = (string)mainProperties[Constants.HomePropertyJSObjectKeys.agentName];
-                hp.apartmentNumber = (string)mainProperties[Constants.HomePropertyJSObjectKeys.apartmentNumber];
-                hp.builderCommunityId = (string)mainProperties[Constants.HomePropertyJSObjectKeys.builderCommunityId];
-                hp.builderName = (string)mainProperties[Constants.HomePropertyJSObjectKeys.builderName];
-                hp.city = (string)mainProperties[Constants.HomePropertyJSObjectKeys.city];
-                hp.communityFloors = null; //!!!
-                hp.communityOtherFeatures = null;   //!!!
-                hp.county = (string)mainProperties[Constants.HomePropertyJSObjectKeys.county];
-                hp.countyFIPS = (string)mainProperties[Constants.HomePropertyJSObjectKeys.countyFIPS];
-                hp.dataPhotos = (string)mainProperties[Constants.HomePropertyJSObjectKeys.dataPhotos];
-                hp.description = null; //!!!!!!!!!!!!!!!!
-                hp.directLink = link;
-                hp.features = null; //!!!!!!!!!!
-                hp.formattedBedAndBath = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedBedAndBath];
-                hp.formattedLotSize = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedLotSize];
-                hp.formattedPrice = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedPrice];
-                hp.formattedSqft = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedSqft];
-                hp.hasOpenHouse = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.hasOpenHouse];
-                hp.hasPhotos = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.hasPhotos];
-                hp.HomeDetails = null; //!!!!
-                hp.idealIncome = -1; //!!!!
-                hp.indexSource = (string)mainProperties[Constants.HomePropertyJSObjectKeys.indexSource];
-                hp.isBuilder = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isBuilder];
-                hp.isBuilderCommunity = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isBuilderCommunity];
-                hp.isForeclosure = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isForeclosure];
-                hp.isForSale = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isForSale];
-                hp.isPlan = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isPlan];
-                hp.isPromotedCommunity = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isPromotedCommunity];
-                hp.isRealogy = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isRealogy];
-                hp.isRental = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isRental];
-                hp.isRentalCommunity = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isRentalCommunity];
-                hp.isSpec = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isSpec];
-                hp.isSrpFeatured = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isSrpFeatured];
-                hp.isStudio = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isStudio];
-                hp.isSubsidized = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isSubsidized];
-                hp.lastSaleDate = (string)mainProperties[Constants.HomePropertyJSObjectKeys.lastSaleDate];
-                hp.latitude = (double)mainProperties[Constants.HomePropertyJSObjectKeys.latitude];
-                hp.listingId = (long)mainProperties[Constants.HomePropertyJSObjectKeys.listingId];
-                hp.listingType = (string)mainProperties[Constants.HomePropertyJSObjectKeys.listingType];
-                hp.locationId = (string)mainProperties[Constants.HomePropertyJSObjectKeys.locationId];
-                hp.longitude = (double)mainProperties[Constants.HomePropertyJSObjectKeys.longitude];
-                hp.metaInfo = null;//!!!!
-                hp.numBathrooms = (int)mainProperties[Constants.HomePropertyJSObjectKeys.numBathrooms];
-                hp.numBedrooms = (int)mainProperties[Constants.HomePropertyJSObjectKeys.numBedrooms];
-                hp.numBeds = (int)mainProperties[Constants.HomePropertyJSObjectKeys.numBeds];
-                hp.numFullBathrooms = (int)mainProperties[Constants.HomePropertyJSObjectKeys.numFullBathrooms];
-                hp.numPartialBathrooms = (int)mainProperties[Constants.HomePropertyJSObjectKeys.numPartialBathrooms];
-                hp.pdpURL = (string)mainProperties[Constants.HomePropertyJSObjectKeys.pdpURL];
-                hp.PetsAllowed = null;// !!!!!!!!!!!
-                hp.phone = null;//!!!!!!!
-                hp.postId = (long)mainProperties[Constants.HomePropertyJSObjectKeys.postId];
-                hp.pricePerSqft = (string)mainProperties[Constants.HomePropertyJSObjectKeys.pricePerSqft];
-                hp.PublicRecords = null; //!!!!!!
-                hp.rentalPartnerDisplayText = (string)mainProperties[Constants.HomePropertyJSObjectKeys.rentalPartnerDisplayText];
-                hp.type = (string)mainProperties[Constants.HomePropertyJSObjectKeys.type];
-                hp.typeDisplay = (string)mainProperties[Constants.HomePropertyJSObjectKeys.typeDisplay];
-                hp.shortDescription = (string)mainProperties[Constants.HomePropertyJSObjectKeys.shortDescription];
-                hp.sqft = (double)mainProperties[Constants.HomePropertyJSObjectKeys.sqft];
-                hp.stateCode = (string)mainProperties[Constants.HomePropertyJSObjectKeys.stateCode];
-                hp.stateName = (string)mainProperties[Constants.HomePropertyJSObjectKeys.stateName];
-                hp.status = (string)mainProperties[Constants.HomePropertyJSObjectKeys.status];
-                hp.street = (string)mainProperties[Constants.HomePropertyJSObjectKeys.street];
-                hp.streetNumber = (string)mainProperties[Constants.HomePropertyJSObjectKeys.streetNumber];
-                hp.yearBuilt = (string)mainProperties[Constants.HomePropertyJSObjectKeys.yearBuilt];
-                hp.zipCode = (string)mainProperties[Constants.HomePropertyJSObjectKeys.zipCode];
+                try { hp.addressForDisplay = (string)mainProperties[Constants.HomePropertyJSObjectKeys.addressForDisplay]; } catch { }
+                try { hp.addressForLeadForm = (string)mainProperties[Constants.HomePropertyJSObjectKeys.addressForLeadForm]; } catch { }
+                try { hp.agentName = (string)mainProperties[Constants.HomePropertyJSObjectKeys.agentName]; } catch { }
+                try { hp.apartmentNumber = (string)mainProperties[Constants.HomePropertyJSObjectKeys.apartmentNumber]; } catch { }
+                try { hp.builderCommunityId = (string)mainProperties[Constants.HomePropertyJSObjectKeys.builderCommunityId]; } catch { }
+                try { hp.builderName = (string)mainProperties[Constants.HomePropertyJSObjectKeys.builderName]; } catch { }
+                try { hp.city = (string)mainProperties[Constants.HomePropertyJSObjectKeys.city]; } catch { }
+                try { hp.communityFloors = null; } catch { }//!!!  
+                try { hp.communityOtherFeatures = null; } catch { }   //!!!   
+                try { hp.county = (string)mainProperties[Constants.HomePropertyJSObjectKeys.county]; } catch { }
+                try { hp.countyFIPS = (string)mainProperties[Constants.HomePropertyJSObjectKeys.countyFIPS]; } catch { }
+                try { hp.dataPhotos = (string)mainProperties[Constants.HomePropertyJSObjectKeys.dataPhotos]; } catch { }
+                try { hp.description = driver.FindElementByCssSelector("#corepropertydescription").Text; } catch { }//!!!!!!!!!!!!!!!!     
+                try { hp.directLink = link; } catch { }
+                try { hp.features = driver.FindElementByCssSelector(".mtl").Text; } catch { }//!!!!!!!!!!     
+                try { hp.formattedBedAndBath = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedBedAndBath]; } catch { }
+                try { hp.formattedLotSize = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedLotSize]; } catch { }
+                try { hp.formattedPrice = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedPrice]; } catch { }
+                try { hp.formattedSqft = (string)mainProperties[Constants.HomePropertyJSObjectKeys.formattedSqft]; } catch { }
+                try { hp.hasOpenHouse = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.hasOpenHouse]; } catch { }
+                try { hp.hasPhotos = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.hasPhotos]; } catch { }
+                try { hp.HomeDetails = null; } catch { }//!!!!    
+                try { hp.idealIncome = -1; } catch { }//!!!!   
+                try { hp.indexSource = (string)mainProperties[Constants.HomePropertyJSObjectKeys.indexSource]; } catch { }
+                try { hp.isBuilder = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isBuilder]; } catch { }
+                try { hp.isBuilderCommunity = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isBuilderCommunity]; } catch { }
+                try { hp.isForeclosure = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isForeclosure]; } catch { }
+                try { hp.isForSale = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isForSale]; } catch { }
+                try { hp.isPlan = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isPlan]; } catch { }
+                try { hp.isPromotedCommunity = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isPromotedCommunity]; } catch { }
+                try { hp.isRealogy = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isRealogy]; } catch { }
+                try { hp.isRental = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isRental]; } catch { }
+                try { hp.isRentalCommunity = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isRentalCommunity]; } catch { }
+                try { hp.isSpec = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isSpec]; } catch { }
+                try { hp.isSrpFeatured = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isSrpFeatured]; } catch { }
+                try { hp.isStudio = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isStudio]; } catch { }
+                try { hp.isSubsidized = (bool)mainProperties[Constants.HomePropertyJSObjectKeys.isSubsidized]; } catch { }
+                try { hp.lastSaleDate = (string)mainProperties[Constants.HomePropertyJSObjectKeys.lastSaleDate]; } catch { }
+                try { hp.latitude = (double)mainProperties[Constants.HomePropertyJSObjectKeys.latitude]; } catch { }
+                try { hp.listingId = (long)mainProperties[Constants.HomePropertyJSObjectKeys.listingId]; } catch { }
+                try { hp.listingType = (string)mainProperties[Constants.HomePropertyJSObjectKeys.listingType]; } catch { }
+                try { hp.locationId = (string)mainProperties[Constants.HomePropertyJSObjectKeys.locationId]; } catch { }
+                try { hp.longitude = (double)mainProperties[Constants.HomePropertyJSObjectKeys.longitude]; } catch { }
+                try { hp.metaInfo = null; } catch { }//!!!! 
+                try { hp.numBathrooms = Convert.ToInt32(mainProperties[Constants.HomePropertyJSObjectKeys.numBathrooms]); } catch { }
+                try { hp.numBedrooms = Convert.ToInt32(mainProperties[Constants.HomePropertyJSObjectKeys.numBedrooms]); } catch { }
+                try { hp.numBeds = Convert.ToInt32(mainProperties[Constants.HomePropertyJSObjectKeys.numBeds]); } catch { }
+                try { hp.numFullBathrooms = Convert.ToInt32(mainProperties[Constants.HomePropertyJSObjectKeys.numFullBathrooms]); } catch { }
+                try { hp.numPartialBathrooms = Convert.ToInt32(mainProperties[Constants.HomePropertyJSObjectKeys.numPartialBathrooms]); } catch { }
+                try { hp.pdpURL = (string)mainProperties[Constants.HomePropertyJSObjectKeys.pdpURL]; } catch { }
+                try { hp.PetsAllowed = null; } catch { }// !!!!!!!!!!!
+                try { hp.phone = null; } catch { }//!!!!!!! 
+                try { hp.postId = (long)mainProperties[Constants.HomePropertyJSObjectKeys.postId]; } catch { }
+                try { hp.pricePerSqft = (string)mainProperties[Constants.HomePropertyJSObjectKeys.pricePerSqft]; } catch { }
+                try { hp.PublicRecords = null; } catch { }//!!!!!!   
+                try { hp.rentalPartnerDisplayText = (string)mainProperties[Constants.HomePropertyJSObjectKeys.rentalPartnerDisplayText]; } catch { }
+                try { hp.type = (string)mainProperties[Constants.HomePropertyJSObjectKeys.type]; } catch { }
+                try { hp.typeDisplay = (string)mainProperties[Constants.HomePropertyJSObjectKeys.typeDisplay]; } catch { }
+                try { hp.shortDescription = (string)mainProperties[Constants.HomePropertyJSObjectKeys.shortDescription]; } catch { }
+                try { hp.sqft = Convert.ToInt32(mainProperties[Constants.HomePropertyJSObjectKeys.sqft]); } catch { }
+                try { hp.stateCode = (string)mainProperties[Constants.HomePropertyJSObjectKeys.stateCode]; } catch { }
+                try { hp.stateName = (string)mainProperties[Constants.HomePropertyJSObjectKeys.stateName]; } catch { }
+                try { hp.status = (string)mainProperties[Constants.HomePropertyJSObjectKeys.status]; } catch { }
+                try { hp.street = (string)mainProperties[Constants.HomePropertyJSObjectKeys.street]; } catch { }
+                try { hp.streetNumber = (string)mainProperties[Constants.HomePropertyJSObjectKeys.streetNumber]; } catch { }
+                try { hp.yearBuilt = Convert.ToInt32(mainProperties[Constants.HomePropertyJSObjectKeys.yearBuilt]); } catch { }
+                try { hp.zipCode = (string)mainProperties[Constants.HomePropertyJSObjectKeys.zipCode]; } catch { }
+                try
+                {
+                    int forSaleLength = Convert.ToInt32(driver.ExecuteScript("return trulia.pdp.comparableProperties.forSale.length"));
+                    int soldLength = Convert.ToInt32(driver.ExecuteScript("return trulia.pdp.comparableProperties.sold.length"));
+                    string forSale = String.Empty;
+                    for (int i = 0; i < forSaleLength; i++)
+                    {
+                        Dictionary<string, object> forSaleDictItem = driver.ExecuteScript(String.Format("return trulia.pdp.comparableProperties.forSale[{0}]", i)) as Dictionary<string, object>;
+                        forSale += "___" + string.Join(";", forSaleDictItem.Select(x => x.Key + "=" + x.Value).ToArray());
+                    }
+                    string sold = String.Empty;
+                    for (int i = 0; i < soldLength; i++)
+                    {
+                        Dictionary<string, object> forSaleDictItem = driver.ExecuteScript(String.Format("return trulia.pdp.comparableProperties.sold[{0}]", i)) as Dictionary<string, object>;
+                        sold += "___" + string.Join(";", forSaleDictItem.Select(x => x.Key + "=" + x.Value).ToArray());
+                    }
+                    hp.ComparablesJSON = String.Format("/{{0}/},/{{1}/}", forSale, sold);
 
 
+                }
+
+                catch { }
+                long ID = hp.InsertToDb();
+                if(ID>0)
+                {
+                    List<PropertyCrime> crimes = GetCrimes(driver, ID);
+                    crimes.ForEach(crime => crime.InsertToDb());
+                }
                 return true; //все прошло успешно
             }
             catch (OpenQA.Selenium.WebDriverException ex)
@@ -301,6 +329,40 @@ namespace FTParser.Components
             }
         }
 
+        private static List<PropertyCrime> GetCrimes(PhantomJSDriver driver, long ID)
+        {
+            try
+            {
+                List<PropertyCrime> crimes = new List<PropertyCrime>();
+                CultureInfo ci = new System.Globalization.CultureInfo("en-US");
+                Convert.ToDateTime("5/24/2017", ci);
+                driver.ExecuteScript("window.scroll(0, document.querySelector('#nearbySubtitle').offsetTop  + 500);");
+                System.Threading.Thread.Sleep(2000);
+                //Screenshot screenshot = ((ITakesScreenshot)driver).GetScreenshot();
+                //screenshot.SaveAsFile("D:\\ScreenShot.png",
+                  //  System.Drawing.Imaging.ImageFormat.Png);
+                var crimesList = driver.FindElementsByCssSelector("div.crimeDataList.bbs.mbs > table > tbody > tr");
+                foreach (var crime in crimesList)
+                {
+                    PropertyCrime temp = new PropertyCrime();
+                    DateTime tempDate;
+                    temp.Date = Convert.ToDateTime(crime.FindElement(By.CssSelector("td:nth-child(1) > div")).Text,ci);
+                    
+                    temp.Type = crime.FindElement(By.CssSelector("td:nth-child(2) > div")).Text;
+                    temp.Description = crime.FindElement(By.CssSelector("td:nth-child(3) > div")).Text;
+                    temp.HomeId = ID;
+                    crimes.Add(temp);
+                }
+                return crimes;
+            }
+            catch
+            {
+                return null;
+                throw;
+            }
+            
+        }
+
         public static void GetCityListToDb(State state)
         {
             while (true)
@@ -313,12 +375,12 @@ namespace FTParser.Components
                         driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
                         break;
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         logger.Error(ex, "Ошибка создания драйвера: {0},{1}", ex.Message, ex.StackTrace);
                     }
                 }
-                
+
                 try
                 {
                     driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);

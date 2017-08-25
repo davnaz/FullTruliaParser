@@ -173,6 +173,7 @@ namespace FTParser.Components
             Proxy proxy = new Proxy();
             proxy.HttpProxy = string.Format("108.59.14.208:13040");
             var service = PhantomJSDriverService.CreateDefaultService();
+            //service.LoadImages = false;
             service.ProxyType = "http";
             service.Proxy = proxy.HttpProxy;
             service.IgnoreSslErrors = true;

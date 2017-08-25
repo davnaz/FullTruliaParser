@@ -73,6 +73,57 @@ namespace FTParser.DataProviders
                 }
             }           
         }
+        /// <summary>
+        /// Выполняет хранимую процедуру и возвращает ID добавленной записи
+        /// </summary>
+        /// <param name="sqlCommand">Хранимая процедура</param>
+        /// <returns>Идентификатор добавленной записи после выполнения хранимой процедуры. Если процедура не имеет возвращаемого значения, метод возвращает -1</returns>
+        public long ExecureSPWithRetVal(SqlCommand sqlCommand)
+        {
+            bool needCloseConnection = true;
+            int numberOfRowsAffected = 0;
+            long Identity = -1; // переменная, в которую мы получим Идентификатор добавленной записи после выполнения хранимой процедуры.
+            if (sqlCommand.CommandType != CommandType.StoredProcedure)
+            {
+                throw new Exception("Not StoredProcedure");
+            }
+            try
+            {
+
+                //If connection is already opened it means that it is a transaction and we must not close 
+                //connection after this command execution, because next command in this transaction uses 
+                //the same connection.
+                SqlParameter par = new SqlParameter("@ID", SqlDbType.Int);
+                par.Direction = ParameterDirection.Output;
+                par.Value = -1;
+                sqlCommand.Parameters.Add(par);
+                if (sqlCommand.Connection.State != ConnectionState.Open)
+                {
+                    sqlCommand.Connection.Open();
+                }
+                else
+                {
+                    needCloseConnection = false;
+                }
+
+                numberOfRowsAffected = sqlCommand.ExecuteNonQuery();//return the number of rows affected
+                //TODO: check numberOfRowsAffected?
+                Identity = (int)par.Value;
+                return Identity;
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception(ex.Message, ex);
+            }
+            finally
+            {
+                if (needCloseConnection)
+                {
+                    sqlCommand.Connection.Close();
+                }
+                
+            }
+        }
         public void ExecureCommand(SqlCommand sqlCommand)
         {
             bool needCloseConnection = true;

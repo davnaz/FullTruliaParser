@@ -208,7 +208,9 @@ namespace FTParser.Components
            public const string @communityFloors              = "@communityFloors";
            public const string @Link                         = "@Link";
            public const string @phone                        = "@phone";
-           public const string @ComparablesJSON              = "@ComparablesJSON";         
+           public const string @ComparablesJSON              = "@ComparablesJSON";
+            public const string @sqft = "@sqft";
+            public const string @Description = "@Description";
         }
 
         public class CrimeCellNames

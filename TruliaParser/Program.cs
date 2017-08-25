@@ -30,8 +30,8 @@ namespace FTParser
         {
             logger.Info("Парсер начал работу.");
 
-            Street s = DataProvider.Instance.GetStreetsFromDb(1, 1)[0];
-            List<string> streetProperties = Parser.ParseHomes("https://www.trulia.com/property-sitemap/CA/Los_Angeles/90048/South_Doheny_Drive/");
+            Street s = DataProvider.Instance.GetStreetsFromDb(94, 94)[0];
+            List<string> streetProperties = Parser.ParseHomes(s);
             foreach(string a in streetProperties)
             {
                 Parser.ParseProperty(a);

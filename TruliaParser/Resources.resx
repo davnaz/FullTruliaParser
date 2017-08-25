@@ -187,7 +187,15 @@
     <value>SP_FinalizeCity</value>
     <comment>Процедура присвоения записи региона маркер Parsed = 1</comment>
   </data>
-  <data name="String1" xml:space="preserve">
-    <value />
+  <data name="SP_AddNewHome" xml:space="preserve">
+    <value>SP_AddNewHome</value>
+    <comment>Добавляет новую запись HomeProperty</comment>
+  </data>
+  <data name="SP_AddNewCrime" xml:space="preserve">
+    <value>SP_AddNewCrime</value>
+  </data>
+  <data name="SP_AddNewSchool" xml:space="preserve">
+    <value>SP_AddNewSchool</value>
+    <comment>Процедура добавления школы в БД</comment>
   </data>
 </root>
