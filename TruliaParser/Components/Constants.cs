@@ -228,6 +228,11 @@ namespace FTParser.Components
             public const string Link = "@Link";
             public const string OffersCount = "@OffersCount";
         }
-
+        public class SchoolType
+        {
+            public const string Elementary = "Elementary";
+            public const string Middle = "Middle";
+            public const string HighSchool = "High School";
+        }
     }
 }

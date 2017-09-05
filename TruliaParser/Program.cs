@@ -20,6 +20,7 @@ using OpenQA.Selenium;
 using System.Drawing;
 using FT.Components;
 
+
 namespace FTParser
 { //
     class Program
@@ -29,7 +30,8 @@ namespace FTParser
         static void Main(string[] args)
         {
             logger.Info("Парсер начал работу.");
-
+           // string ab = Resources.jsonTest;
+           // var asd = Newtonsoft.Json.JsonConvert.DeserializeObject<SchoolsJSON>(ab);
             Street s = DataProvider.Instance.GetStreetsFromDb(94, 94)[0];
             List<string> streetProperties = Parser.ParseHomes(s);
             foreach(string a in streetProperties)

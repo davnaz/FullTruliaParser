@@ -171,15 +171,26 @@ namespace FTParser.Components
         public static PhantomJSDriverService GetServiceForDriver()
         {
             Proxy proxy = new Proxy();
-            proxy.HttpProxy = string.Format("108.59.14.208:13040");
+            //proxy.HttpProxy = string.Format("108.59.14.208:13040");
             var service = PhantomJSDriverService.CreateDefaultService();
             //service.LoadImages = false;
             service.ProxyType = "http";
-            service.Proxy = proxy.HttpProxy;
+            //service.Proxy = proxy.HttpProxy;
             service.IgnoreSslErrors = true;
             service.WebSecurity = false;
             service.LocalToRemoteUrlAccess = true;
             service.DiskCache = true; // Dunno what this does but I thought it might help.
+            //service.AddArguments("--proxy=" + string.Format("108.59.14.208:13040"), "--proxy-type=http","--");
+           // service.AddArgument("--webStorageEnabled=true");
+            service.AddArgument("--ignore-ssl-errors=true");
+            //service.AddArgument("--acceptSslCerts=true");
+            //service.AddArgument("--applicationCacheEnabled=true");
+           
+            service.MaxDiskCacheSize = 102400;
+            service.LocalStoragePath = "/";
+            service.LocalStorageQuota = 102400;
+            
+            
             
             return service;
         }

@@ -283,33 +283,17 @@ namespace FTParser.Components
                 try { hp.streetNumber = (string)mainProperties[Constants.HomePropertyJSObjectKeys.streetNumber]; } catch { }
                 try { hp.yearBuilt = Convert.ToInt32(mainProperties[Constants.HomePropertyJSObjectKeys.yearBuilt]); } catch { }
                 try { hp.zipCode = (string)mainProperties[Constants.HomePropertyJSObjectKeys.zipCode]; } catch { }
-                try
-                {
-                    int forSaleLength = Convert.ToInt32(driver.ExecuteScript("return trulia.pdp.comparableProperties.forSale.length"));
-                    int soldLength = Convert.ToInt32(driver.ExecuteScript("return trulia.pdp.comparableProperties.sold.length"));
-                    string forSale = String.Empty;
-                    for (int i = 0; i < forSaleLength; i++)
-                    {
-                        Dictionary<string, object> forSaleDictItem = driver.ExecuteScript(String.Format("return trulia.pdp.comparableProperties.forSale[{0}]", i)) as Dictionary<string, object>;
-                        forSale += "___" + string.Join(";", forSaleDictItem.Select(x => x.Key + "=" + x.Value).ToArray());
-                    }
-                    string sold = String.Empty;
-                    for (int i = 0; i < soldLength; i++)
-                    {
-                        Dictionary<string, object> forSaleDictItem = driver.ExecuteScript(String.Format("return trulia.pdp.comparableProperties.sold[{0}]", i)) as Dictionary<string, object>;
-                        sold += "___" + string.Join(";", forSaleDictItem.Select(x => x.Key + "=" + x.Value).ToArray());
-                    }
-                    hp.ComparablesJSON = String.Format("/{{0}/},/{{1}/}", forSale, sold);
-
-
-                }
-
-                catch { }
+                try { hp.ComparablesJSON = (string)driver.ExecuteScript("return JSON.stringify(trulia.pdp.comparableProperties)"); } catch { }
                 long ID = hp.InsertToDb();
                 if(ID>0)
                 {
                     List<PropertyCrime> crimes = GetCrimes(driver, ID);
                     crimes.ForEach(crime => crime.InsertToDb());
+                }
+                if(ID > 0)
+                {
+                    List<PropertySchool> schools = GetSchools(driver, ID);
+                    schools.ForEach(school => school.InsertToDb());
                 }
                 return true; //все прошло успешно
             }
@@ -329,25 +313,73 @@ namespace FTParser.Components
             }
         }
 
+        private static List<PropertySchool> GetSchools(PhantomJSDriver driver, long ID)
+        {
+            try
+            {
+                string Type = String.Empty; //у нас три типа школ, по умолчанию открывается начальная
+                List<PropertySchool> schools = new List<PropertySchool>();
+                driver.ExecuteScript("document.querySelector('#schoolsCard .clickable').click()"); //открываем список школ, чтобы он прогрузился
+                System.Threading.Thread.Sleep(1000);
+
+                for (int i = 0; i < 3; i++)
+                {
+                    driver.ExecuteScript(String.Format("document.querySelectorAll('div.mbl.schoolListContainer > div > ul > li > div')[{0}].click()", i)); //нажимаем на кнопку с нуным списком школ
+                    switch (i)
+                    {
+                        case 0:
+                            Type = Constants.SchoolType.Elementary;
+                            break;
+                        case 1:
+                            Type = Constants.SchoolType.Middle;
+                            break;
+                        case 2:
+                            Type = Constants.SchoolType.HighSchool;
+                            break;
+                    }
+                    System.Threading.Thread.Sleep(1000);
+                    var schoolsList = driver.FindElementsByCssSelector(".line.pls.bbs.pvm"); //выбираем список 
+                    foreach (var school in schoolsList)
+                    {
+                        PropertySchool temp = new PropertySchool();
+                        temp.homeID = ID;
+                        temp.Type = Type;
+                        temp.SchoolName = school.FindElement(By.CssSelector("a")).Text;
+                        temp.Grades = school.FindElement(By.CssSelector(".line > div")).Text.Replace("Grades: ", String.Empty);
+                        temp.Distance = Convert.ToDouble(school.FindElement(By.CssSelector(".line > div:nth-child(2)")).Text.Replace(" mi", String.Empty));
+                        temp.Address = school.FindElement(By.CssSelector(".typeLowlight")).Text;
+                        temp.Rank = school.FindElement(By.CssSelector(".txtC")).Text;
+                    }
+                }
+                return schools;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Не удалось получить список школ: {},   {}", ex.Message, ex.StackTrace);
+                return null;
+                throw;
+            }
+
+
+
+
+        }
+
         private static List<PropertyCrime> GetCrimes(PhantomJSDriver driver, long ID)
         {
             try
             {
                 List<PropertyCrime> crimes = new List<PropertyCrime>();
                 CultureInfo ci = new System.Globalization.CultureInfo("en-US");
-                Convert.ToDateTime("5/24/2017", ci);
                 driver.ExecuteScript("window.scroll(0, document.querySelector('#nearbySubtitle').offsetTop  + 500);");
                 System.Threading.Thread.Sleep(2000);
-                //Screenshot screenshot = ((ITakesScreenshot)driver).GetScreenshot();
-                //screenshot.SaveAsFile("D:\\ScreenShot.png",
-                  //  System.Drawing.Imaging.ImageFormat.Png);
+                //Screenshot screenshot = ((ITakesScreenshot)driver).GetScreenshot().SaveAsFile("D:\\ScreenShot.png",System.Drawing.Imaging.ImageFormat.Png);
                 var crimesList = driver.FindElementsByCssSelector("div.crimeDataList.bbs.mbs > table > tbody > tr");
                 foreach (var crime in crimesList)
                 {
                     PropertyCrime temp = new PropertyCrime();
-                    DateTime tempDate;
-                    temp.Date = Convert.ToDateTime(crime.FindElement(By.CssSelector("td:nth-child(1) > div")).Text,ci);
-                    
+                   
+                    temp.Date = Convert.ToDateTime(crime.FindElement(By.CssSelector("td:nth-child(1) > div")).Text,ci);                    
                     temp.Type = crime.FindElement(By.CssSelector("td:nth-child(2) > div")).Text;
                     temp.Description = crime.FindElement(By.CssSelector("td:nth-child(3) > div")).Text;
                     temp.HomeId = ID;
@@ -355,8 +387,9 @@ namespace FTParser.Components
                 }
                 return crimes;
             }
-            catch
+            catch(Exception ex)
             {
+                Console.WriteLine("Не удалось получить список преступлений: {},   {}",ex.Message,ex.StackTrace);
                 return null;
                 throw;
             }
@@ -591,6 +624,7 @@ namespace FTParser.Components
                     driver = new PhantomJSDriver(ProxySolver.GetServiceForDriver());
                     driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
                     driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(20);
+                    //OpenQA.Selenium.Proxy prx = new Proxy()
                     break;
                 }
                 catch (Exception ex)

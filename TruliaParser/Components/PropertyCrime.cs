@@ -23,9 +23,9 @@ namespace FT.Components
             {
                 SqlCommand insertCrime = DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_AddNewCrime);
                 insertCrime.Parameters.AddWithValue("@Home_ID", HomeId);
-                insertCrime.Parameters.AddWithValue("@Date", Date);
-                insertCrime.Parameters.AddWithValue("@Type", Type);
-                insertCrime.Parameters.AddWithValue("@Description", Description);
+                if (Date != null) { insertCrime.Parameters.AddWithValue("@Date", Date); }
+                if (Type != null) { insertCrime.Parameters.AddWithValue("@Type", Type); }
+                if (Description != null) { insertCrime.Parameters.AddWithValue("@Description", Description); }
                 DataProvider.Instance.ExecureSP(insertCrime);
             }
             catch (Exception ex)

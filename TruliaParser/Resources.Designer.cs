@@ -106,6 +106,15 @@ namespace TruliaParser {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на {&quot;elementary&quot;:[{&quot;name&quot;:&quot;Chet&apos;s Creek Elementary School&quot;,&quot;type&quot;:&quot;Public&quot;,&quot;city&quot;:&quot;Jacksonville&quot;,&quot;state_code&quot;:&quot;FL&quot;,&quot;street_address&quot;:&quot;13200 Chets Creek Boulevard&quot;,&quot;gradespan&quot;:&quot;K-5&quot;,&quot;greatschools_rating&quot;:10,&quot;url&quot;:&quot;\/schools\/FL-jacksonville-chets_creek_elementary_school-4807965&quot;,&quot;distance&quot;:5.17,&quot;is_assigned&quot;:false},{&quot;name&quot;:&quot;Kernan Trail Elementary School&quot;,&quot;type&quot;:&quot;Public&quot;,&quot;city&quot;:&quot;Jacksonville&quot;,&quot;state_code&quot;:&quot;FL&quot;,&quot;street_address&quot;:&quot;2281 Kernan Boulevard South&quot;,&quot;gradespan&quot;:&quot;K-5&quot;,&quot;greatschools_rating&quot;:8,&quot;url&quot;:&quot;\/schoo [остаток строки не уместился]&quot;;.
+        /// </summary>
+        internal static string jsonTest {
+            get {
+                return ResourceManager.GetString("jsonTest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на 5.
         /// </summary>
         internal static string MaxDegreeOfParallelism {

@@ -10,7 +10,7 @@ using TruliaParser;
 
 namespace FT.Components
 {
-    class PropertySchools
+    class PropertySchool
     {
         protected static Logger logger = LogManager.GetCurrentClassLogger();
         public long homeID { get; set; }
@@ -18,19 +18,21 @@ namespace FT.Components
         public string SchoolName { get; set; }
         public string Address { get; set; }
         public string Grades { get; set; }
-        public double Distance { get; set; }
+        public string Rank { get; set; }
+        public double Distance { get; set; } = -1;
 
         public void InsertToDb()
         {
             try
             {
                 SqlCommand insertSchool = DataProvider.Instance.CreateSQLCommandForSP(Resources.SP_AddNewSchool);
-                insertSchool.Parameters.AddWithValue("@Home_ID", homeID);
-                insertSchool.Parameters.AddWithValue("@Type", Type);
-                insertSchool.Parameters.AddWithValue("@SchoolName", SchoolName);
-                insertSchool.Parameters.AddWithValue("@Address", Address);
-                insertSchool.Parameters.AddWithValue("@Grades", Grades);
-                insertSchool.Parameters.AddWithValue("@Distance", Distance);
+                insertSchool.Parameters.AddWithValue("@Home_ID", homeID);          
+                if(Type != null){insertSchool.Parameters.AddWithValue("@Type", Type);               }
+                if(SchoolName != null){insertSchool.Parameters.AddWithValue("@SchoolName", SchoolName);   }
+                if(Address != null){insertSchool.Parameters.AddWithValue("@Address", Address);         }
+                if(Grades != null){insertSchool.Parameters.AddWithValue("@Grades", Grades);           }
+                if (Distance != -1) { insertSchool.Parameters.AddWithValue("@Distance", Distance); }
+                if (Rank != null) { insertSchool.Parameters.AddWithValue("@Rank", Rank); }
                 DataProvider.Instance.ExecureSP(insertSchool);
             }
             catch (Exception ex)

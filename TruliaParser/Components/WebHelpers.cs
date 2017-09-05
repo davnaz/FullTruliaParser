@@ -119,8 +119,7 @@ namespace FTParser.Components
             }
             catch
             {
-                return Constants.WebAttrsNames.NotFound;
-                
+                return Constants.WebAttrsNames.NotFound;                
             }
         }
 
